@@ -7,7 +7,7 @@ from typing import Any
 class DirectoryManager:
     def __init__(self, path: str):
         self.cwd = str(Path.cwd())
-        self.img_dir = self.cwd + "/computer_vision/img/"
+        self.img_dir = self.cwd + "/ComputerVision/img/"
         self.image_dictionary: Any = {}
 
         with os.scandir(self.img_dir) as directories:
@@ -51,6 +51,6 @@ class DirectoryManager:
 
 
 if __name__ == "__main__":
-    dm = DirectoryManager("/computer_vision/img/")
-    dm.create_json("computer_vision/image_repository.json")
-    dm.create_types("computer_vision/cv_types.py")
+    dm = DirectoryManager("/ComputerVision/img/")
+    dm.create_json("ComputerVision/image_repository.json")
+    dm.create_types("ComputerVision/cv_types.py")
