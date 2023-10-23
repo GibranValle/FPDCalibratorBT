@@ -7,7 +7,7 @@ from GUI.Manual import Manual
 from GUI.Semi import Semi
 from GUI.Output import Output
 from Logger.Logger import Logger
-from SmartExposure.SmartExposure import SmartExposure
+from Smart.SmartExposure import SmartExposure
 import sys
 
 # theme settings

@@ -28,26 +28,32 @@ class ComputerVision:
         with open("./ComputerVision/image_repository.json") as file:
             self.image_repository = json.load(file)
 
-    def _get_status(self, name: str):
-        for key, folder in self.image_repository.items():
-            if name in key:
-                for status, path in folder.items():
-                    try:
-                        x, y = locateCenterOnScreen(path, confidence=0.85)  # type: ignore
-                        setattr(self, f"{name}", status)
-                    except TypeError:
-                        print(f"{path}{name} icon not found")
-                        pass
-        return getattr(self, f"{name}")
+    def get_icon_coords_status_gen(self, button: status_gen) -> tuple[float, float]:
+        dir: keys = "status_gen"
+        path: str = self.image_repository[dir][button]
+        try:
+            x, y = locateCenterOnScreen(path)  # type: ignore
+            return x, y  # type: ignore
+        except TypeError:
+            return -1, -1
 
-    def get_mu_status(self) -> status_mu:
-        return self._get_status("status_mu")
+    def get_icon_coords_status_mu(self, button: status_mu) -> tuple[float, float]:
+        dir: keys = "status_mu"
+        path: str = self.image_repository[dir][button]
+        try:
+            x, y = locateCenterOnScreen(path)  # type: ignore
+            return x, y  # type: ignore
+        except TypeError:
+            return -1, -1
 
-    def get_mcu_status(self) -> status_mcu:
-        return self._get_status("status_mcu")
-
-    def get_gen_status(self) -> status_gen:
-        return self._get_status("status_gen")
+    def get_icon_coords_status_mcu(self, button: status_mcu) -> tuple[float, float]:
+        dir: keys = "status_mcu"
+        path: str = self.image_repository[dir][button]
+        try:
+            x, y = locateCenterOnScreen(path)  # type: ignore
+            return x, y  # type: ignore
+        except TypeError:
+            return -1, -1
 
     def get_icon_coords_aws(self, button: aws) -> tuple[float, float]:
         dir: keys = "aws"
@@ -129,3 +135,15 @@ class ComputerVision:
             return x, y  # type: ignore
         except TypeError:
             return -1, -1
+
+    @DeprecationWarning
+    def _get_status(self, name: str):
+        for key, folder in self.image_repository.items():
+            if name in key:
+                for status, path in folder.items():
+                    try:
+                        x, y = locateCenterOnScreen(path, confidence=0.85)  # type: ignore
+                        setattr(self, f"{name}", status)
+                    except TypeError:
+                        pass
+        return getattr(self, f"{name}")

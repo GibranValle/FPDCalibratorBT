@@ -46,15 +46,24 @@ class Semi(CTk):
             hover_color=ERR_COLOR_HOVER,
             command=lambda: self.action("stop"),
         )
+        self.button_semi_continuous = CTkButton(
+            f,
+            font=text,
+            text="Loop",
+            width=WIDTH_3,
+            command=lambda: self.action("continuos"),
+        )
 
         self.serial = app.com
         self.frame_semi.grid_columnconfigure(0, weight=1)
         self.frame_semi.grid_columnconfigure(1, weight=1)
         self.frame_semi.grid_columnconfigure(2, weight=1)
+        self.frame_semi.grid_columnconfigure(2, weight=1)
         self.label_semi.grid(row=0, column=0, columnspan=3, pady=PADY_INSIDE_FRAME, padx=PADX)  # type: ignore
-        self.button_semi_start.grid(row=1, column=0, pady=PADY_INSIDE_LAST, sticky="we", padx=PADX_LEFT)  # type: ignore
-        self.button_semi_pause.grid(row=1, column=1, pady=PADY_INSIDE_LAST, sticky="we", padx=PADX_RIGHT)  # type: ignore
-        self.button_semi_stop.grid(row=1, column=2, pady=PADY_INSIDE_LAST, sticky="we", padx=PADX_RIGHT)  # type: ignore
+        self.button_semi_start.grid(row=1, column=0, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
+        self.button_semi_pause.grid(row=1, column=1, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
+        self.button_semi_stop.grid(row=1, column=2, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
+        self.button_semi_continuous.grid(row=1, column=3, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
         # self.show()
 
     def action(self, button: auto_option) -> None:
@@ -65,16 +74,24 @@ class Semi(CTk):
             self.button_semi_start.configure(state=DISABLED)  # type: ignore
             self.button_semi_pause.configure(state=NORMAL)  # type: ignore
             self.button_semi_stop.configure(state=NORMAL)  # type: ignore
+            self.button_semi_continuous.configure(state=DISABLED)  # type: ignore
             smart_exposure_thread = Thread(target=self.start_exposure)
             smart_exposure_thread.start()
         elif button == "pause":
             self.button_semi_start.configure(state=NORMAL)  # type: ignore
             self.button_semi_pause.configure(state=DISABLED)  # type: ignore
             self.button_semi_stop.configure(state=NORMAL)  # type: ignore
+            self.button_semi_continuous.configure(state=DISABLED)  # type: ignore
         elif button == "stop":
             self.button_semi_start.configure(state=NORMAL)  # type: ignore
             self.button_semi_pause.configure(state=NORMAL)  # type: ignore
             self.button_semi_stop.configure(state=NORMAL)  # type: ignore
+            self.button_semi_continuous.configure(state=NORMAL)  # type: ignore
+        elif button == "continuos":
+            self.button_semi_start.configure(state=DISABLED)  # type: ignore
+            self.button_semi_pause.configure(state=NORMAL)  # type: ignore
+            self.button_semi_stop.configure(state=NORMAL)  # type: ignore
+            self.button_semi_continuous.configure(state=DISABLED)  # type: ignore
 
     def show(self):
         self.frame_semi.pack(pady=PADY_FRAME, padx=PADX, side=TOP, fill=BOTH)  # type: ignore
