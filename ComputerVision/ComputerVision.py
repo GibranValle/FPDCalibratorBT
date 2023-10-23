@@ -33,19 +33,20 @@ class ComputerVision:
             if name in key:
                 for status, path in folder.items():
                     try:
-                        x, y = locateCenterOnScreen(path)  # type: ignore
+                        x, y = locateCenterOnScreen(path, confidence=0.85)  # type: ignore
                         setattr(self, f"{name}", status)
                     except TypeError:
+                        print(f"{path}{name} icon not found")
                         pass
         return getattr(self, f"{name}")
 
-    def get_mu_status(self):
+    def get_mu_status(self) -> status_mu:
         return self._get_status("status_mu")
 
-    def get_mcu_status(self):
+    def get_mcu_status(self) -> status_mcu:
         return self._get_status("status_mcu")
 
-    def get_gen_status(self):
+    def get_gen_status(self) -> status_gen:
         return self._get_status("status_gen")
 
     def get_icon_coords_aws(self, button: aws) -> tuple[float, float]:

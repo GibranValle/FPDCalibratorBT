@@ -31,3 +31,48 @@ class Output(CTk):
 
     def change_b(self, message: str):
         self.output_b.configure(text=message)  # type: ignore
+
+    def in_pause(self, secs: int):
+        time = self.convert_seconds(secs)
+        self.output_a.configure(text="Pause button pushed")  # type: ignore
+        self.output_b.configure(text=f"time waited: {time}")  # type: ignore
+
+    def waiting_ready(self, secs: int):
+        time = self.convert_seconds(secs)
+        self.output_a.configure(text="Waiting for ready signal")  # type: ignore
+        self.output_b.configure(text=f"time waited: {time}")  # type: ignore
+
+    def waiting_exposure_start(self, secs: int):
+        time = self.convert_seconds(secs)
+        self.output_a.configure(text="Waiting for exposure start")  # type: ignore
+        self.output_b.configure(text=f"time waited: {time}")  # type: ignore
+
+    def waiting_exposure_end(self, secs: int):
+        time = self.convert_seconds(secs)
+        self.output_a.configure(text="Waiting for exposure end")  # type: ignore
+        self.output_b.configure(text=f"time waited: {time}")  # type: ignore
+
+    def exposure_success(self, secs: int):
+        time = self.convert_seconds(secs)
+        self.output_a.configure(text="Exposure completed!")  # type: ignore
+        self.output_b.configure(text=f"total time waited: {time}")  # type: ignore
+
+    def exposure_aborted(self, secs: int):
+        time = self.convert_seconds(secs)
+        self.output_a.configure(text="Exposure aborted!")  # type: ignore
+        self.output_b.configure(text=f"total time used: {time}")  # type: ignore
+
+    @staticmethod
+    def convert_seconds(secs: int) -> str:
+        temp = secs
+        if secs >= 3600:
+            hours = int(secs / 3600)
+            temp -= secs - 3600 * hours
+            mins = int(temp / 60)
+            sec = temp % 60
+            return f"{hours}h {mins}m {sec}s"
+        if secs >= 60:
+            mins = int(secs / 60)
+            sec = secs % 60
+            return f"{mins}m {sec}s"
+        return f"{secs}s"
