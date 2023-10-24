@@ -1,12 +1,13 @@
-from customtkinter import CTk, set_appearance_mode, set_default_color_theme, CTkFrame, CTkLabel, CTkButton, LEFT, TOP, BOTH, DISABLED, NORMAL  # type: ignore
+from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, LEFT, TOP, BOTH, DISABLED, NORMAL  # type: ignore
 from GUI.constants import *
 from threading import Thread
 from time import sleep
-from typing import Any
 
 
 class Serial(CTk):
-    def __init__(self, app: Any):
+    from GUI.GUI import GUI
+
+    def __init__(self, app: GUI):
         super().__init__()  # type: ignore
         self.frame_serial = CTkFrame(app, fg_color=BG_COLOR_1)
         self.label_serial = CTkLabel(
@@ -25,8 +26,10 @@ class Serial(CTk):
             width=125,
         )
         self.serial = app.com
-        self.label_serial.pack(pady=(5, 5), padx=30)  # type: ignore
-        self.button_serial.pack(pady=(0, 10), padx=10)  # type: ignore
+        self.frame_serial.columnconfigure(0, weight=1)
+        self.frame_serial.columnconfigure(1, weight=1)
+        self.label_serial.grid(row=0, column=0, padx=PADX_INSIDE_FRAME, pady=PADY_INSIDE_LAST)  # type: ignore
+        self.button_serial.grid(row=0, column=1, padx=PADX_INSIDE_FRAME, pady=PADY_INSIDE_LAST)  # type: ignore
         self.show()
 
     def toggle_serial(self):

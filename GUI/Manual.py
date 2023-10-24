@@ -1,10 +1,11 @@
 from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, TOP, BOTH, END  # type: ignore
 from GUI.constants import *
-from typing import Any
 
 
 class Manual(CTk):
-    def __init__(self, app: Any):
+    from GUI.GUI import GUI
+
+    def __init__(self, app: GUI):
         super().__init__()  # type: ignore
         self.frame_manual = CTkFrame(app, fg_color=BG_COLOR_1)
         f = self.frame_manual

@@ -1,10 +1,11 @@
 from customtkinter import CTk, CTkFrame, CTkButton, LEFT, TOP, BOTH, DISABLED, NORMAL  # type: ignore
 from GUI.constants import *
-from typing import Any
 
 
 class Tabs(CTk):
-    def __init__(self, app: Any):
+    from GUI.GUI import GUI
+
+    def __init__(self, app: GUI):
         super().__init__()  # type: ignore
         self.frame_tabs = CTkFrame(app, fg_color=BG_COLOR_1)
         self.frame_tabs.grid_columnconfigure(0, weight=1)

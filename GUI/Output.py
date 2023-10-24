@@ -1,10 +1,11 @@
 from customtkinter import CTk, CTkFrame, CTkLabel, TOP, BOTH, BOTTOM, END, LEFT  # type: ignore
 from GUI.constants import *
-from typing import Any
 
 
 class Output(CTk):
-    def __init__(self, app: Any):
+    from GUI.GUI import GUI
+
+    def __init__(self, app: GUI):
         super().__init__()  # type: ignore
         self.frame_output = CTkFrame(app, fg_color=BG_COLOR_1)
         f = self.frame_output
@@ -31,6 +32,10 @@ class Output(CTk):
 
     def change_b(self, message: str):
         self.output_b.configure(text=message)  # type: ignore
+
+    def clear_all(self):
+        self.output_a.configure(text=" ")  # type: ignore
+        self.output_b.configure(text=" ")  # type: ignore
 
     def in_pause(self, secs: int):
         time = self.convert_seconds(secs)
