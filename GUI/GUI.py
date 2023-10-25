@@ -1,12 +1,14 @@
-from customtkinter import CTk, set_appearance_mode, set_default_color_theme  # type: ignore
+from customtkinter import CTk, CTkToplevel, set_appearance_mode, set_default_color_theme  # type: ignore
 import sys
-
-# theme settings
-set_appearance_mode("dark")
-set_default_color_theme("green")  # Themes: "blue" (standard), "green", "dark-blue"
-
+from GUI.constants import *
+from os import getcwd
 
 class GUI(CTk):
+    # theme settings
+    path = str(getcwd())
+    set_appearance_mode("dark")
+    set_default_color_theme(f'{path}/GUI/dark-green.json')  # Themes: "blue" (standard), "green", "dark-blue"
+
     font_title: tuple[str, int, str] = ("Consolas", 18, "bold")
     font_text: tuple[str, int] = ("Consolas", 16)
     font_output: tuple[str, int] = ("Consolas", 13)
@@ -27,6 +29,7 @@ class GUI(CTk):
         from GUI.Auxiliary import Auxiliary
 
         super().__init__()  # type: ignore
+        self.toplevel_window: CTkToplevel
         self.app_state: auto_option = "stop"
         # Make the window jump above all
         self.attributes("-topmost", True)  # type: ignore
@@ -39,6 +42,7 @@ class GUI(CTk):
         self.serial = Serial(self)  # type: ignore
         self.tabs = Tabs(self)
         self.selected_tab = "manual"
+        self.selected_cal: list[all_calibrations] = []
         self.output = Output(self)
         self.manual = Manual(self)
         self.semi = Semi(self)
@@ -74,6 +78,17 @@ class GUI(CTk):
             print("destroying")
             self.destroy()
             sys.exit()
+
+    def open_toplevel(self):
+        from GUI.TopLevelWindow import ToplevelWindow
+
+        try:
+            r = self.toplevel_window.winfo_exists()
+            print(r)
+        except AttributeError:
+            self.toplevel_window = ToplevelWindow(self)
+        else:
+            self.toplevel_window.focus()
 
     def change_app_state(self, state: auto_option) -> None:
         self.app_state = state

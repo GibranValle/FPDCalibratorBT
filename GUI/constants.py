@@ -48,7 +48,72 @@ push_option = Literal["push", "release"]
 class_option = Literal["manual", "semi", "auto", "serial", "gui", "smart"]
 level_option = Literal["info", "error", "warning"]
 auto_option = Literal["start", "pause", "stop", "continuos"]
+aux_option = Literal["enable", "hlv", "mag"]
 
+
+all_calibrations = Literal[
+    "offset",
+    "defect",
+    "defect solid",
+    "pixel defect",
+    "shading",
+    "uniformity",
+    "defect solid stereo",
+    "defect solid biopsy",
+    "defect solid tomo",
+    "x-ray uniformity stereo",
+    "x-ray uniformity biopsy",
+    "x-ray uniformity tomo",
+    "x-ray uniformity ES",
+]
+
+BASIC_CALIBRATIONS: list[all_calibrations] = [
+    "offset",
+    "defect",
+    "defect solid",
+    "pixel defect",
+    "shading",
+    "uniformity",
+]
+TOMO_CALIBRATIONS: list[all_calibrations] = [
+    "offset",
+    "defect",
+    "defect solid",
+    "pixel defect",
+    "shading",
+    "uniformity",
+    "defect solid tomo",
+    "x-ray uniformity tomo",
+]
+FULL_CALIBRATIONS: list[all_calibrations] = [
+    "offset",
+    "defect",
+    "defect solid",
+    "pixel defect",
+    "shading",
+    "uniformity",
+    "defect solid stereo",
+    "defect solid biopsy",
+    "defect solid tomo",
+    "x-ray uniformity stereo",
+    "x-ray uniformity biopsy",
+    "x-ray uniformity tomo",
+]
+ALL_CALIBRATIONS: list[all_calibrations] = [
+    "offset",
+    "defect",
+    "defect solid",
+    "pixel defect",
+    "shading",
+    "uniformity",
+    "defect solid stereo",
+    "defect solid biopsy",
+    "defect solid tomo",
+    "x-ray uniformity stereo",
+    "x-ray uniformity biopsy",
+    "x-ray uniformity tomo",
+    "x-ray uniformity ES",
+]
 
 PADY_FRAME = 10, 0
 PADY_END = 10
