@@ -22,6 +22,8 @@ class Serial(CTk):
             self.frame_serial,
             command=lambda: self.toggle_serial(),
             font=app.font_text,
+            fg_color=OK_COLOR,
+            hover_color=OK_COLOR_HOVER,
             text="Connect",
             width=125,
         )

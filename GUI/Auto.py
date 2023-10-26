@@ -58,17 +58,20 @@ class Auto(CTk):
     def action(self, button: auto_option) -> None:
         self.app.change_app_state(button)
         if button == "start":
+            self.app.log("auto", "info", "Request auto start...")
             self.button_semi_start.configure(state=DISABLED)  # type: ignore
             self.button_semi_pause.configure(state=NORMAL)  # type: ignore
             self.button_semi_stop.configure(state=NORMAL)  # type: ignore
             self.button_semi_continuous.configure(state=DISABLED)  # type: ignore
             Thread(target=self.app.smart.start_smart_exposure).start()
         elif button == "pause":
+            self.app.log("auto", "info", "Request pause...")
             self.button_semi_start.configure(state=NORMAL)  # type: ignore
             self.button_semi_pause.configure(state=DISABLED)  # type: ignore
             self.button_semi_stop.configure(state=NORMAL)  # type: ignore
             self.button_semi_continuous.configure(state=DISABLED)  # type: ignore
         elif button == "stop":
+            self.app.log("auto", "info", "Request stop...")
             self.button_semi_start.configure(state=NORMAL)  # type: ignore
             self.button_semi_pause.configure(state=NORMAL)  # type: ignore
             self.button_semi_stop.configure(state=NORMAL)  # type: ignore

@@ -3,11 +3,12 @@ import sys
 from GUI.constants import *
 from os import getcwd
 
+
 class GUI(CTk):
     # theme settings
     path = str(getcwd())
     set_appearance_mode("dark")
-    set_default_color_theme(f'{path}/GUI/dark-green.json')  # Themes: "blue" (standard), "green", "dark-blue"
+    set_default_color_theme("dark-blue")
 
     font_title: tuple[str, int, str] = ("Consolas", 18, "bold")
     font_text: tuple[str, int] = ("Consolas", 16)
@@ -83,8 +84,7 @@ class GUI(CTk):
         from GUI.TopLevelWindow import ToplevelWindow
 
         try:
-            r = self.toplevel_window.winfo_exists()
-            print(r)
+            self.toplevel_window.winfo_exists()
         except AttributeError:
             self.toplevel_window = ToplevelWindow(self)
         else:

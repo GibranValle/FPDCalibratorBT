@@ -1,21 +1,7 @@
-from pyautogui import locateCenterOnScreen
-import json
+from pyautogui import locateCenterOnScreen, locateOnScreen
 from typing import Literal
-from ComputerVision.cv_types import (
-    status_gen,
-    status_mcu,
-    status_mu,
-    aws,
-    gen,
-    mcu,
-    mcu_opt,
-    mcu_tabs,
-    mu,
-    mutl,
-    mu_tabs,
-    ru,
-    keys,
-)
+from ComputerVision.image_repository import *
+from ComputerVision.cv_types import *
 
 fraction = Literal["1/4", "1/2", "3/4"]
 
@@ -25,8 +11,7 @@ class ComputerVision:
         self.status_mu: status_mu = "offline"
         self.status_mcu: status_mcu = "offline"
         self.status_gen: status_gen = "idle"
-        with open("./ComputerVision/image_repository.json") as file:
-            self.image_repository = json.load(file)
+        self.image_repository = image_repository
 
     def get_icon_coords_status_gen(self, button: status_gen) -> tuple[float, float]:
         dir: keys = "status_gen"
@@ -100,7 +85,27 @@ class ComputerVision:
         except TypeError:
             return -1, -1
 
+    def get_icon_all_coords_mcu_tabs(
+        self, button: mcu_tabs
+    ) -> tuple[float, float, float, float]:
+        dir: keys = "mcu_tabs"
+        path: str = self.image_repository[dir][button]
+        try:
+            x, y, w, h = locateOnScreen(path)  # type: ignore
+            return x, y, w, h  # type: ignore
+        except TypeError:
+            return -1, -1, -1, -1
+
     def get_icon_coords_mu(self, button: mu) -> tuple[float, float]:
+        dir: keys = "mu"
+        path: str = self.image_repository[dir][button]
+        try:
+            x, y = locateCenterOnScreen(path)  # type: ignore
+            return x, y  # type: ignore
+        except TypeError:
+            return -1, -1
+
+    def get_icon_coords_mu_gen(self, button: mu_gen) -> tuple[float, float]:
         dir: keys = "mu"
         path: str = self.image_repository[dir][button]
         try:
@@ -117,6 +122,17 @@ class ComputerVision:
             return x, y  # type: ignore
         except TypeError:
             return -1, -1
+
+    def get_icon_all_coords_mu_tabs(
+        self, button: mu_tabs
+    ) -> tuple[float, float, float, float]:
+        dir: keys = "mu_tabs"
+        path: str = self.image_repository[dir][button]
+        try:
+            x, y, w, h = locateOnScreen(path)  # type: ignore
+            return x, y, w, h  # type: ignore
+        except TypeError:
+            return -1, -1, -1, -1
 
     def get_icon_coords_ru(self, button: ru) -> tuple[float, float]:
         dir: keys = "ru"

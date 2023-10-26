@@ -9,11 +9,11 @@ class Manual(CTk):
         super().__init__()  # type: ignore
         self.frame_manual = CTkFrame(app, fg_color=BG_COLOR_1)
         f = self.frame_manual
+        self.app = app
         text = app.font_text
         title = app.font_title
         self.com = app.com
         self.output = app.output
-        self.logger = app.logger
 
         self.label_manual = CTkLabel(f, font=title, text="Manual mode")
 
@@ -47,17 +47,19 @@ class Manual(CTk):
     def action(self, button: push_option):
         try:
             if button == "push":
+                self.app.log('manual', 'info', 'Request exposure start...')
                 self.output.change_a("Request exposure start...")
                 self.output.change_b(" ")
-                self.com.communicate("S")
+                self.com.communicate("L")
                 self.output.change_b("UNDER EXPOSURE...")
             elif button == "release":
+                self.app.log('manual', 'info', 'Request exposure end...')
                 self.output.change_a("Request exposure end...")
                 self.output.change_b(" ")
                 self.com.communicate("X")
                 self.output.change_b("NOT EXPOSING...")
         except ConnectionError:
-            print("connection error")
+            self.app.log('manual', 'error', 'Connection error')
             self.output.change_a("Communication error")
             self.output.change_b("device not responding...")
 

@@ -85,4 +85,4 @@ class ToplevelWindow(CTkToplevel):
             elif globals()[name].get() == "off":
                 if option in self.gui.selected_cal:
                     self.gui.selected_cal.remove(option)
-        print(self.gui.selected_cal)
+        

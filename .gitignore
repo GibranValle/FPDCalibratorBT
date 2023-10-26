@@ -2,3 +2,8 @@
 *.csv
 /.idea/.gitignore
 *.pyc
+
+/logs
+/build
+/dist
+*.spec

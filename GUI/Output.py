@@ -10,6 +10,7 @@ class Output(CTk):
         self.frame_output = CTkFrame(app, fg_color=BG_COLOR_1)
         f = self.frame_output
         text = app.font_output
+        self.app = app
         self.output_a = CTkLabel(f, font=text, text="text output a", height=HEIGHT_3)
         self.output_b = CTkLabel(f, font=text, text="text output b", height=HEIGHT_3)
 
