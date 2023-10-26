@@ -1,4 +1,4 @@
-from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, TOP, BOTH, END, NORMAL, DISABLED  # type: ignore
+from customtkinter import CTk, CTkFrame, CTkButton, TOP, BOTH, END, NORMAL, DISABLED  # type: ignore
 from GUI.constants import *
 
 
@@ -50,6 +50,14 @@ class Auxiliary(CTk):
 
     def action(self, button: aux_option) -> None:
         print(button)
+        if button == "enable":
+            self.app.mu_interactor.enable_ment()
+
+        elif button == "hlv":
+            self.app.mu_interactor.toggle_HVL()
+
+        elif button == "mag":
+            self.app.mu_interactor.toggle_MAG()
 
     def selector(self) -> None:
         self.app.open_toplevel()

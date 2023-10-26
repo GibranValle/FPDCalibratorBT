@@ -34,6 +34,10 @@ class Output(CTk):
     def change_b(self, message: str):
         self.output_b.configure(text=message)  # type: ignore
 
+    def restart(self):
+        self.output_a.configure(text="Could not start")  # type: ignore
+        self.output_b.configure(text="Please try again")  # type: ignore
+
     def clear_all(self):
         self.output_a.configure(text=" ")  # type: ignore
         self.output_b.configure(text=" ")  # type: ignore

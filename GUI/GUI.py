@@ -28,17 +28,20 @@ class GUI(CTk):
         from Smart.SmartExposure import SmartExposure
         from GUI.Auto import Auto
         from GUI.Auxiliary import Auxiliary
+        from Interaction.AWSGen import AWSGen
+        from Interaction.MCU0 import MCU0
+        from Interaction.MU0 import MU0
 
         super().__init__()  # type: ignore
         self.toplevel_window: CTkToplevel
         self.app_state: auto_option = "stop"
-        # Make the window jump above all
         self.attributes("-topmost", True)  # type: ignore
         self.geometry("350x350")  # type: ignore
         self.title("FPD Calibration bot")  # type: ignore
         self.resizable(False, False)  # type: ignore
         self.protocol("WM_DELETE_WINDOW", self.on_closing)  # type: ignore
         self.logger = Logger()
+
         self.com = SerialCom(self)
         self.serial = Serial(self)  # type: ignore
         self.tabs = Tabs(self)
@@ -48,8 +51,11 @@ class GUI(CTk):
         self.manual = Manual(self)
         self.semi = Semi(self)
         self.auto = Auto(self)
-        self.aux = Auxiliary(self)
         self.smart = SmartExposure(self)
+        self.aws_interactor = AWSGen(self)
+        self.mu_interactor = MU0(self)
+        self.mcu_interactor = MCU0(self)
+        self.aux = Auxiliary(self)
         self.log("gui", "info", "Gui initialization completed")
 
     def change_tab(self, tab: tabs_list):
