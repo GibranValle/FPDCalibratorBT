@@ -96,11 +96,16 @@ class MU0(Interaction):
         raise ValueError("icon not found")
 
     def _open_MUTL_MU(self) -> None:
+        print("_open_mutl_mu")
         if self._process_exists("MUTL.exe"):
+            print("MUTL exists...")
             self._changeWindow("MU0")
             self.app.log("gui", "info", "Program exists changing window")
             return
-        self._openApp("MU")
+        if self._openApp("MU"):
+            print("MUTL not exists but opened...")
+            return
+        raise AttributeError("Program not installed")
 
     def _click_icon_mu_tabs(self, button: mu_clickable_tabs) -> None:
         """Raise exception if not found"""
@@ -141,12 +146,24 @@ class MU0(Interaction):
     # ------------------- EXPORT ------------------------
     def enable_ment(self) -> None:
         try:
+            print("opening RU MUTL MU mcu")
             self._open_MUTL_MU()
+        except AttributeError:
+            print("Program not installed")
+            if not self.app.com.is_offline():
+                self.app.output.restart()
+                print("RU not install")
+            print("offline mode continuing")
+        try:
             self._click_icon_mu_tabs("generator")
+            print("generator tab selected")
             self._click_mu_gen_icon("enable_ment")
+            print("enable ment mode selected")
         except ValueError:
-            self.app.output.restart()
-            print("ERROR")
+            if not self.app.com.is_offline():
+                self.app.output.restart()
+                print("ERROR")
+            print("Enable mode not found")
 
     def toggle_MAG(self) -> None:
         try:
@@ -154,8 +171,9 @@ class MU0(Interaction):
             self._click_icon_mu_tabs("calibration")
             self._click_mu_icon("MAG")
         except ValueError:
-            self.app.output.restart()
-            print("ERROR")
+            if not self.app.com.is_offline():
+                self.app.output.restart()
+                print("ERROR")
 
     def toggle_HVL(self) -> None:
         try:
@@ -163,7 +181,8 @@ class MU0(Interaction):
             self._click_icon_mu_tabs("calibration")
             self._click_mu_icon("HVL")
         except ValueError:
-            print("ERROR")
-            self.app.output.restart()
+            if not self.app.com.is_offline():
+                self.app.output.restart()
+                print("ERROR")
 
     # ------------------- EXPORT ------------------------

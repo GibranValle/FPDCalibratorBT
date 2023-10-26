@@ -93,7 +93,7 @@ class Interaction:
         w.EnumWindows(handler, name)  # type: ignore
         sleep(1)
 
-    def _openApp(self, appName: available_programs):
+    def _openApp(self, appName: available_programs) -> bool:
         try:
             if appName == "RuPcTool.exe":
                 route = "C:\Program Files\Fujifilm\FCR\TOOL\RuPcTool\\"  # type: ignore
@@ -118,10 +118,13 @@ class Interaction:
 
         except FileNotFoundError:
             self.app.log("gui", "error", "File not found")
+            return False
         except OSError:
             self.app.log("gui", "error", "program not installed found")
+            return False
         else:
             sleep(1)
+            return True
 
     def closeApp(self, appName: available_programs):
         if self._process_exists(appName):

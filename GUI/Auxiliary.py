@@ -1,4 +1,4 @@
-from customtkinter import CTk, CTkFrame, CTkButton, TOP, BOTH, END, NORMAL, DISABLED  # type: ignore
+from customtkinter import CTk, CTkFrame, CTkButton, TOP, BOTH  # type: ignore
 from GUI.constants import *
 
 
@@ -45,11 +45,9 @@ class Auxiliary(CTk):
         self.button_toggle_HVL.grid(row=0, column=1, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
         self.button_toggle_MAG.grid(row=0, column=2, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
         self.button_calib_selector.grid(row=1, column=0, columnspan=2, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
-
         # self.show()
 
     def action(self, button: aux_option) -> None:
-        print(button)
         if button == "enable":
             self.app.mu_interactor.enable_ment()
 

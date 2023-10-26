@@ -1,5 +1,6 @@
 from Interaction.Interaction import Interaction
 from typing import Literal
+from ComputerVision.cv_types import mcu, mcu_opt
 
 
 class MCU0(Interaction):
@@ -76,10 +77,8 @@ class MCU0(Interaction):
             return True
         self.app.log("gui", "error", "MCU PAGE 0 not FOUND")
         return False
-    # -------- INTERNALS -------------------------------
-    
-    # -------- EXPORT -------------------------------
-    def click_icon_mcu_tabs(self, button: mcu_clickable_tabs):
+
+    def _click_icon_mcu_tabs(self, button: mcu_clickable_tabs):
         if button == "calibration":
             if self._check_calibration_selected():
                 return
@@ -106,3 +105,36 @@ class MCU0(Interaction):
 
             self.app.log("gui", "error", "MCU tab not FOUND")
             raise ValueError("Calibration Optional tab not found")
+
+    # -------- INTERNALS -------------------------------
+
+    # -------- EXPORT -------------------------------
+    def click_mcu_calibration(self, button: mcu):
+        try:
+            self._click_icon_mcu_tabs("calibration")
+            x, y = self.cv.get_icon_coords_mcu(button)
+            if x > 0 and y > 0:
+                self._click_center(x, y)
+                return
+            self.app.log("gui", "error", f"{button} not found")
+            self.app.output.restart()
+            print("ERROR")
+        except ValueError:
+            if not self.app.com.is_offline():
+                self.app.output.restart()
+                print("ERROR")
+
+    def click_mcu_opt_calibration(self, button: mcu_opt):
+        try:
+            self._click_icon_mcu_tabs("calibration")
+            x, y = self.cv.get_icon_coords_mcu_opt(button)
+            if x > 0 and y > 0:
+                self._click_center(x, y)
+                return
+            self.app.log("gui", "error", f"{button} not found")
+            self.app.output.restart()
+            print("ERROR")
+        except ValueError:
+            if not self.app.com.is_offline():
+                self.app.output.restart()
+                print("ERROR")
