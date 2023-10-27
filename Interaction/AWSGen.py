@@ -9,16 +9,16 @@ class AWSGen(Interaction):
         super().__init__(app)
 
     def _click_icon_aws(self, button: aws):
-        x, y = self.cv.get_icon_coords_aws(button)
+        x, y = self.cv.get_icon_coords(button)
         if x > 0 and y > 0:
-            self._click_center(x, y, True)
+            self._click_point(x, y, True)
             return
         return False
 
     def _click_icon_gen(self, button: gen):
-        x, y = self.cv.get_icon_coords_gen(button)
+        x, y = self.cv.get_icon_coords(button)
         if x > 0 and y > 0:
-            self._click_center(x, y, True)
+            self._click_point(x, y, True)
             return
         return False
 

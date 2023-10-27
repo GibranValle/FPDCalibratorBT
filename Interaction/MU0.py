@@ -1,6 +1,5 @@
 from typing import Literal
 from Interaction.Interaction import Interaction
-from ComputerVision.cv_types import mu, mu_gen
 
 
 class MU0(Interaction):
@@ -13,176 +12,202 @@ class MU0(Interaction):
         super().__init__(app)
         self.app = app
 
-    # -------- INTERNALS -------------------------------
-    def _check_mu_calibration_selected(self) -> bool:
-        # if tab already selected return
-        x, y = self.cv.get_icon_coords_mu_tabs("calibration_selected")
-        if x > 0 and y > 0:
-            self.app.log("gui", "info", "Calibration tab already selected")
-            return True
-        self.app.log("gui", "error", "Calibration tab not selected")
-        return False
-
-    def _check_generator_selected(self) -> bool:
-        # if tab already selected return
-        x, y = self.cv.get_icon_coords_mu_tabs("generator_selected")
-        if x > 0 and y > 0:
-            self.app.log("gui", "info", "Generator tab already selected")
-            return True
-        self.app.log("gui", "error", "Generator tab not selected")
-        return False
-
-    def _check_mu_page_0(self) -> bool:
-        # if page 0 found, change to page 1
-        x, y = self.cv.get_icon_coords_mu_tabs("mua")
-        if x > 0 and y > 0:
-            x, y = self.cv.get_icon_coords_mutl("only_right")
-            self._click_center(x, y)
-            self.app.log("gui", "info", "MU Page 0 found")
-            return True
-        self.app.log("gui", "error", "MU Page 0 not found")
-        return False
-
-    def _check_mu_page_1_or_calibration_unselected(self) -> bool:
-        # if page 1 or unselected found, click tab
-        x, y, w, h = self.cv.get_icon_all_coords_mu_tabs("generator_selected")
-        if x > 0 and y > 0:
-            self._click_fractions(x, y, w, h, "1/4")
-            self.app.log("gui", "info", "MU Page 1 found")
-            # verify again
-            if self._check_mu_calibration_selected():
-                return True
-
-        x, y, w, h = self.cv.get_icon_all_coords_mu_tabs("mub")
-        if x > 0 and y > 0:
-            self._click_fractions(x, y, w, h, "1/4")
-            self.app.log("gui", "info", "MU Page 1 found")
-            # verify again
-            if self._check_mu_calibration_selected():
-                return True
-        return False
-
-    def _check_mu_page_1_or_generator_unselected(self) -> bool:
-        # if page 1 or unselected found, click tab
-        x, y, w, h = self.cv.get_icon_all_coords_mcu_tabs("cal_selected")
-        if x > 0 and y > 0:
-            self._click_fractions(x, y, w, h, "3/4")
-            self.app.log("gui", "info", "MU Page 1 found")
-            # verify again
-            if self._check_mu_calibration_selected():
-                return True
-
-        x, y, w, h = self.cv.get_icon_all_coords_mcu_tabs("mcub")
-        if x > 0 and y > 0:
-            self._click_fractions(x, y, w, h, "3/4")
-            self.app.log("gui", "info", "MU Page 1 found")
-            # verify again
-            if self._check_mu_calibration_selected():
-                return True
-        return False
-
-    def _click_mu_icon(self, button: mu):
-        x, y = self.cv.get_icon_coords_mu(button)
-        if x > 0 and y > 0:
-            return True
-        self.app.log("gui", "error", "MU icon not found")
-        raise ValueError("icon not found")
-
-    def _click_mu_gen_icon(self, button: mu_gen):
-        x, y = self.cv.get_icon_coords_mu_gen(button)
-        if x > 0 and y > 0:
-            return True
-        self.app.log("gui", "error", "GEN icon not found")
-        raise ValueError("icon not found")
-
-    def _open_MUTL_MU(self) -> None:
-        print("_open_mutl_mu")
+    def _open_MUTL_MU(self) -> bool:
         if self._process_exists("MUTL.exe"):
-            print("MUTL exists...")
             self._changeWindow("MU0")
-            self.app.log("gui", "info", "Program exists changing window")
-            return
+            self.app.log("mu0", "info", "Program exists changing window")
+            return True
         if self._openApp("MU"):
-            print("MUTL not exists but opened...")
-            return
-        raise AttributeError("Program not installed")
+            self.app.log("mu0", "info", "Program not exists opening")
+            return True
+        self.app.log("mu0", "error", "Program not installed")
+        return False
 
-    def _click_icon_mu_tabs(self, button: mu_clickable_tabs) -> None:
-        """Raise exception if not found"""
-        if button == "calibration":
-            if self._check_mu_calibration_selected():
-                return
+    def _click_generator_tab(self):
+        # check if already selected
+        x, y = self.cv.get_icon_coords("generator_selected")
+        if x > 0 and y > 0:
+            print("generator already selected returning")
+            return True
 
-            if self._check_mu_page_1_or_calibration_unselected():
-                if self._check_mu_calibration_selected():
-                    return
+        # check if page 1
+        x, y, w, h = self.cv.get_icon_all_coords("mub")
+        if x > 0 and y > 0:
+            print("page 1 found, clicking generator tab")
+            x, y = self._get_fraction_point(x, y, w, h, "1/2")
+            self._click_point(x, y)
+            return True
 
-            if self._check_mu_page_0():
-                if self._check_mu_page_1_or_calibration_unselected():
-                    if self._check_mu_calibration_selected():
-                        return
+        # check if calibration selected
+        x, y, w, h = self.cv.get_icon_all_coords("calibration_selected")
+        if x > 0 and y > 0:
+            print("page 1 found, clicking generator tab")
+            x, y = self._get_fraction_point(x, y, w, h, "1/2")
+            print(x, y)
+            self._click_point(x, y)
+            return True
 
-            self.app.log("gui", "error", "Tab not found")
-            raise ValueError("Calibration tab not found")
+        # check if page 0
+        x, y = self.cv.get_icon_coords("mua")
+        if x > 0 and y > 0:
+            print("page 0 found")
+            x, y, w, h = self.cv.get_icon_all_coords("only_right")
+            if x > 0 and y > 0:
+                x, y = self._get_fraction_point(x, y, w, h, "3/4")
+                print("arrow found... clicking")
+                self._click_point(x, y)
+                x, y, w, h = self.cv.get_icon_all_coords("mub")
+                if x > 0 and y > 0:
+                    print("page 1 found, clicking generator tab")
+                    x, y = self._get_fraction_point(x, y, w, h, "1/2")
+                    self._click_point(x, y)
+                    return True
+        print("Generator tab not visible")
+        return False
 
-        elif button == "generator":
-            if self._check_generator_selected():
-                return
+    def _click_calibration_tab(self):
+        # check if already selected
+        x, y = self.cv.get_icon_coords("calibration_selected")
+        if x > 0 and y > 0:
+            print("calibration already selected returning")
+            return True
 
-            if self._check_mu_page_1_or_generator_unselected():
-                if self._check_generator_selected():
-                    return
+        # check if page 1
+        x, y, w, h = self.cv.get_icon_all_coords("mub")
+        if x > 0 and y > 0:
+            print("page 1 found, clicking generator tab")
+            x, y = self._get_fraction_point(x, y, w, h, "1/4")
+            self._click_point(x, y)
+            return True
 
-            if self._check_mu_page_0():
-                if self._check_mu_page_1_or_generator_unselected():
-                    if self._check_generator_selected():
-                        return
+        # check if calibration selected
+        x, y, w, h = self.cv.get_icon_all_coords("generator_selected")
+        if x > 0 and y > 0:
+            print("page 1 found, clicking calibration tab")
+            x, y = self._get_fraction_point(x, y, w, h, "1/4")
+            print(x, y)
+            self._click_point(x, y)
+            return True
 
-            self.app.log("gui", "error", "Tab not found")
-            raise ValueError("Generator tab not found")
+        # check if page 0
+        x, y = self.cv.get_icon_coords("mua")
+        if x > 0 and y > 0:
+            print("page 0 found")
+            x, y, w, h = self.cv.get_icon_all_coords("only_right")
+            if x > 0 and y > 0:
+                x, y = self._get_fraction_point(x, y, w, h, "3/4")
+                print("arrow found... clicking")
+                self._click_point(x, y)
+                x, y, w, h = self.cv.get_icon_all_coords("mub")
+                if x > 0 and y > 0:
+                    print("page 1 found, clicking calibration tab")
+                    x, y = self._get_fraction_point(x, y, w, h, "1/4")
+                    self._click_point(x, y)
+                    return True
+        print("Calibration tab not visible")
+        return False
 
-    # -------- INTERNALS -------------------------------
-
-    # ------------------- EXPORT ------------------------
     def enable_ment(self) -> None:
+        online = not self.app.com.is_offline()
         try:
-            print("opening RU MUTL MU mcu")
-            self._open_MUTL_MU()
-        except AttributeError:
-            print("Program not installed")
-            if not self.app.com.is_offline():
-                self.app.output.restart()
-                print("RU not install")
-            print("offline mode continuing")
+            if self._open_MUTL_MU():
+                self.app.output.clicked("MUTL")
+            else:
+                self.app.output.restart("MUTL")
+                if online:
+                    raise RuntimeError("MUTL not installed")
+        except RuntimeError:
+            return
+
         try:
-            self._click_icon_mu_tabs("generator")
-            print("generator tab selected")
-            self._click_mu_gen_icon("enable_ment")
-            print("enable ment mode selected")
-        except ValueError:
-            if not self.app.com.is_offline():
-                self.app.output.restart()
-                print("ERROR")
-            print("Enable mode not found")
+            if self._click_generator_tab():
+                self.app.output.clicked("Generator tab")
+            else:
+                self.app.output.restart("Generator tab")
+                if online:
+                    raise RuntimeError("GENERATOR TAB NOT VISIBLE")
+        except RuntimeError:
+            return
+
+        try:
+            x, y = self.cv.get_icon_coords("enable_ment")
+            if x > 0 and y > 0:
+                self._click_point(x, y)
+                self.app.output.clicked("Enable ment mode")
+                return
+
+            self.app.output.restart("MUTL")
+            if online:
+                raise RuntimeError("enable ment mode button not visible")
+        except RuntimeError:
+            return
 
     def toggle_MAG(self) -> None:
+        online = not self.app.com.is_offline()
         try:
-            self._open_MUTL_MU()
-            self._click_icon_mu_tabs("calibration")
-            self._click_mu_icon("MAG")
-        except ValueError:
-            if not self.app.com.is_offline():
-                self.app.output.restart()
-                print("ERROR")
+            if self._open_MUTL_MU():
+                self.app.output.clicked("MUTL")
+            else:
+                self.app.output.restart("MUTL")
+                if online:
+                    raise RuntimeError("MUTL not installed")
+        except RuntimeError:
+            return
+
+        try:
+            if self._click_calibration_tab():
+                self.app.output.clicked("Calibration tab")
+            else:
+                self.app.output.restart("MUTL")
+                if online:
+                    raise RuntimeError("GENERATOR TAB NOT VISIBLE")
+        except RuntimeError:
+            return
+
+        try:
+            x, y = self.cv.get_icon_coords("MAG")
+            if x > 0 and y > 0:
+                self._click_point(x, y)
+                self.app.output.clicked("MAG")
+                return
+
+            self.app.output.restart("MUTL")
+            if online:
+                raise RuntimeError("MAG button not visible")
+        except RuntimeError:
+            return
 
     def toggle_HVL(self) -> None:
+        online = not self.app.com.is_offline()
         try:
-            self._open_MUTL_MU()
-            self._click_icon_mu_tabs("calibration")
-            self._click_mu_icon("HVL")
-        except ValueError:
-            if not self.app.com.is_offline():
-                self.app.output.restart()
-                print("ERROR")
+            if self._open_MUTL_MU():
+                self.app.output.clicked("MUTL")
+            else:
+                self.app.output.restart("MUTL")
+                if online:
+                    raise RuntimeError("MUTL not installed")
+        except RuntimeError:
+            return
 
-    # ------------------- EXPORT ------------------------
+        try:
+            if self._click_calibration_tab():
+                self.app.output.clicked("Calibration tab")
+            else:
+                self.app.output.restart("MUTL")
+                if online:
+                    raise RuntimeError("Calibration tab not visible")
+        except RuntimeError:
+            return
+
+        try:
+            x, y = self.cv.get_icon_coords("HVL")
+            if x > 0 and y > 0:
+                self._click_point(x, y)
+                self.app.output.clicked("HVL")
+                return
+
+            self.app.output.restart("MUTL")
+            if online:
+                raise RuntimeError("Calibration tab not visible")
+        except RuntimeError:
+            return

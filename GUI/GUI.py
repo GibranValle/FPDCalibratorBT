@@ -51,10 +51,10 @@ class GUI(CTk):
         self.manual = Manual(self)
         self.semi = Semi(self)
         self.auto = Auto(self)
-        self.smart = SmartExposure(self)
         self.aws_interactor = AWSGen(self)
         self.mu_interactor = MU0(self)
         self.mcu_interactor = MCU0(self)
+        self.smart = SmartExposure(self)
         self.aux = Auxiliary(self)
         self.log("gui", "info", "Gui initialization completed")
 
@@ -90,11 +90,12 @@ class GUI(CTk):
         from GUI.TopLevelWindow import ToplevelWindow
 
         try:
-            self.toplevel_window.winfo_exists()
+            if not self.toplevel_window.winfo_exists():
+                self.toplevel_window = ToplevelWindow(self)
+            else:
+                self.toplevel_window.focus()
         except AttributeError:
             self.toplevel_window = ToplevelWindow(self)
-        else:
-            self.toplevel_window.focus()
 
     def change_app_state(self, state: auto_option) -> None:
         self.app_state = state

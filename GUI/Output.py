@@ -34,8 +34,12 @@ class Output(CTk):
     def change_b(self, message: str):
         self.output_b.configure(text=message)  # type: ignore
 
-    def restart(self):
-        self.output_a.configure(text="Could not start")  # type: ignore
+    def clicked(self, msg: str = ""):
+        self.output_a.configure(text=f"{msg} started")  # type: ignore
+        self.output_b.configure(text="...")  # type: ignore
+
+    def restart(self, msg: str = ""):
+        self.output_a.configure(text=f"Could not start{msg}")  # type: ignore
         self.output_b.configure(text="Please try again")  # type: ignore
 
     def clear_all(self):
@@ -45,6 +49,16 @@ class Output(CTk):
     def in_pause(self, secs: int):
         time = self.convert_seconds(secs)
         self.output_a.configure(text="Pause button pushed")  # type: ignore
+        self.output_b.configure(text=f"time waited: {time}")  # type: ignore
+
+    def waiting_calib_start(self, secs: int):
+        time = self.convert_seconds(secs)
+        self.output_a.configure(text="Waiting for calib start")  # type: ignore
+        self.output_b.configure(text=f"time waited: {time}")  # type: ignore
+
+    def waiting_calib_end(self, secs: int):
+        time = self.convert_seconds(secs)
+        self.output_a.configure(text="Waiting for calib end")  # type: ignore
         self.output_b.configure(text=f"time waited: {time}")  # type: ignore
 
     def waiting_ready(self, secs: int):
@@ -62,15 +76,23 @@ class Output(CTk):
         self.output_a.configure(text="Waiting for exposure end")  # type: ignore
         self.output_b.configure(text=f"time waited: {time}")  # type: ignore
 
+    def calibration_success(self, secs: int):
+        time = self.convert_seconds(secs)
+        self.output_a.configure(text="Calibration completed!")  # type: ignore
+        self.output_b.configure(text=f"total time waited: {time}")  # type: ignore
+
     def exposure_success(self, secs: int):
         time = self.convert_seconds(secs)
         self.output_a.configure(text="Exposure completed!")  # type: ignore
         self.output_b.configure(text=f"total time waited: {time}")  # type: ignore
 
-    def exposure_aborted(self, secs: int):
-        time = self.convert_seconds(secs)
+    def calibration_aborted(self):
+        self.output_a.configure(text="Calibration aborted!")  # type: ignore
+        self.output_b.configure(text=f"-----------------")  # type: ignore
+
+    def exposure_aborted(self):
         self.output_a.configure(text="Exposure aborted!")  # type: ignore
-        self.output_b.configure(text=f"total time used: {time}")  # type: ignore
+        self.output_b.configure(text=f"-----------------")  # type: ignore
 
     @staticmethod
     def convert_seconds(secs: int) -> str:

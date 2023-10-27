@@ -29,7 +29,8 @@ class ToplevelWindow(CTkToplevel):
             self.frame_buttons, text="FULL", width=75, command=self.full
         )
         self.full_button.pack(padx=10, pady=10, side=LEFT)  # type: ignore
-        self.frame_buttons.pack(padx=10, pady=10)  # type: ignore
+
+        self.frame_buttons.pack(padx=10, pady=(5, 10))  # type: ignore
         self.createCheckbox()
 
     def createCheckbox(self):
@@ -85,4 +86,3 @@ class ToplevelWindow(CTkToplevel):
             elif globals()[name].get() == "off":
                 if option in self.gui.selected_cal:
                     self.gui.selected_cal.remove(option)
-        

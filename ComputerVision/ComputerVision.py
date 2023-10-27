@@ -13,35 +13,36 @@ class ComputerVision:
         self.status_gen: status_gen = "idle"
         self.image_repository = image_repository
 
-    def get_icon_coords_status_gen(self, button: status_gen) -> tuple[float, float]:
-        dir: keys = "status_gen"
-        path: str = self.image_repository[dir][button]
-        try:
-            x, y = locateCenterOnScreen(path)  # type: ignore
-            return x, y  # type: ignore
-        except TypeError:
-            return -1, -1
-
-    def get_icon_coords_status_mu(self, button: status_mu) -> tuple[float, float]:
-        dir: keys = "status_mu"
-        path: str = self.image_repository[dir][button]
-        try:
-            x, y = locateCenterOnScreen(path)  # type: ignore
-            return x, y  # type: ignore
-        except TypeError:
-            return -1, -1
-
-    def get_icon_coords_status_mcu(self, button: status_mcu) -> tuple[float, float]:
-        dir: keys = "status_mcu"
-        path: str = self.image_repository[dir][button]
-        try:
-            x, y = locateCenterOnScreen(path)  # type: ignore
-            return x, y  # type: ignore
-        except TypeError:
-            return -1, -1
-
-    def get_icon_coords_aws(self, button: aws) -> tuple[float, float]:
+    def get_icon_coords(self, button: all_buttons) -> tuple[int, int]:
         dir: keys = "aws"
+        if button in AWS:
+            dir: keys = "aws"
+        elif button in GEN:
+            dir: keys = "gen"
+        elif button in MCU:
+            dir: keys = "mcu"
+        elif button in MCU_OPT:
+            dir: keys = "mcu_opt"
+        elif button in MCU_TABS:
+            dir: keys = "mcu_tabs"
+        elif button in MCU_OPT:
+            dir: keys = "mcu_opt"
+        if button in MU:
+            dir: keys = "mu"
+        elif button in MUTL:
+            dir: keys = "mutl"
+        elif button in MU_GEN:
+            dir: keys = "mu_gen"
+        elif button in MU_TABS:
+            dir: keys = "mu_tabs"
+        elif button in RU:
+            dir: keys = "ru"
+        elif button in STATUS_GEN:
+            dir: keys = "status_gen"
+        elif button in STATUS_MCU:
+            dir: keys = "status_mcu"
+        elif button in STATUS_MU:
+            dir: keys = "status_mu"
         path: str = self.image_repository[dir][button]
         try:
             x, y = locateCenterOnScreen(path)  # type: ignore
@@ -49,108 +50,20 @@ class ComputerVision:
         except TypeError:
             return -1, -1
 
-    def get_icon_coords_gen(self, button: gen) -> tuple[float, float]:
-        dir: keys = "gen"
-        path: str = self.image_repository[dir][button]
-        try:
-            x, y = locateCenterOnScreen(path)  # type: ignore
-            return x, y  # type: ignore
-        except TypeError:
-            return -1, -1
-
-    def get_icon_coords_mcu(self, button: mcu) -> tuple[float, float]:
-        dir: keys = "mcu"
-        path: str = self.image_repository[dir][button]
-        try:
-            x, y = locateCenterOnScreen(path)  # type: ignore
-            return x, y  # type: ignore
-        except TypeError:
-            return -1, -1
-
-    def get_icon_coords_mcu_opt(self, button: mcu_opt) -> tuple[float, float]:
-        dir: keys = "mcu_opt"
-        path: str = self.image_repository[dir][button]
-        try:
-            x, y = locateCenterOnScreen(path)  # type: ignore
-            return x, y  # type: ignore
-        except TypeError:
-            return -1, -1
-
-    def get_icon_coords_mcu_tabs(self, button: mcu_tabs) -> tuple[float, float]:
-        dir: keys = "mcu_tabs"
-        path: str = self.image_repository[dir][button]
-        try:
-            x, y = locateCenterOnScreen(path)  # type: ignore
-            return x, y  # type: ignore
-        except TypeError:
-            return -1, -1
-
-    def get_icon_all_coords_mcu_tabs(
-        self, button: mcu_tabs
-    ) -> tuple[float, float, float, float]:
-        dir: keys = "mcu_tabs"
+    def get_icon_all_coords(
+        self, button: mcu_tabs | mu_tabs | mutl
+    ) -> tuple[int, int, int, int]:
+        dir: keys = "mu_tabs"
+        if button in MCU_TABS:
+            dir: keys = "mcu_tabs"
+        elif button in MUTL:
+            dir: keys = "mutl"
         path: str = self.image_repository[dir][button]
         try:
             x, y, w, h = locateOnScreen(path)  # type: ignore
             return x, y, w, h  # type: ignore
         except TypeError:
             return -1, -1, -1, -1
-
-    def get_icon_coords_mu(self, button: mu) -> tuple[float, float]:
-        dir: keys = "mu"
-        path: str = self.image_repository[dir][button]
-        try:
-            x, y = locateCenterOnScreen(path)  # type: ignore
-            return x, y  # type: ignore
-        except TypeError:
-            return -1, -1
-
-    def get_icon_coords_mu_gen(self, button: mu_gen) -> tuple[float, float]:
-        dir: keys = "mu"
-        path: str = self.image_repository[dir][button]
-        try:
-            x, y = locateCenterOnScreen(path)  # type: ignore
-            return x, y  # type: ignore
-        except TypeError:
-            return -1, -1
-
-    def get_icon_coords_mu_tabs(self, button: mu_tabs) -> tuple[float, float]:
-        dir: keys = "mu_tabs"
-        path: str = self.image_repository[dir][button]
-        try:
-            x, y = locateCenterOnScreen(path)  # type: ignore
-            return x, y  # type: ignore
-        except TypeError:
-            return -1, -1
-
-    def get_icon_all_coords_mu_tabs(
-        self, button: mu_tabs
-    ) -> tuple[float, float, float, float]:
-        dir: keys = "mu_tabs"
-        path: str = self.image_repository[dir][button]
-        try:
-            x, y, w, h = locateOnScreen(path)  # type: ignore
-            return x, y, w, h  # type: ignore
-        except TypeError:
-            return -1, -1, -1, -1
-
-    def get_icon_coords_ru(self, button: ru) -> tuple[float, float]:
-        dir: keys = "ru"
-        path: str = self.image_repository[dir][button]
-        try:
-            x, y = locateCenterOnScreen(path)  # type: ignore
-            return x, y  # type: ignore
-        except TypeError:
-            return -1, -1
-
-    def get_icon_coords_mutl(self, button: mutl) -> tuple[float, float]:
-        dir: keys = "mutl"
-        path: str = self.image_repository[dir][button]
-        try:
-            x, y = locateCenterOnScreen(path)  # type: ignore
-            return x, y  # type: ignore
-        except TypeError:
-            return -1, -1
 
     @DeprecationWarning
     def _get_status(self, name: str):

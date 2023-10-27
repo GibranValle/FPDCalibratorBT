@@ -36,24 +36,30 @@ class DirectoryManager:
     def create_types(self, output_path: str):
         with open(f"{output_path}", "w") as file:
             file.write("from typing import Literal\n")
+            all: list[str] = []
             keys: list[str] = []
             for key, iterable in self.image_repository.items():
                 keys.append(f"'{key}'")
-                file.write(key)
-                file.write(f" = Literal[")
+                # creating array of
                 temp: list[str] = []
-                for index, name_long in enumerate(iterable):
+                for name_long in iterable:
                     name = name_long.split(".")[0]
-                    temp.append(name)
-                    file.write(f"'{name}'")
-                    if index != len(iterable) - 1:
-                        file.write(", ")
-                file.write("]")
-                file.write("\n")
-            file.write("keys = Literal[")
-            file.write(", ".join(keys))
-            file.write("]")
-            file.write("\n")
+                    all.append(f"'{name}'")
+                    temp.append(f"'{name}'")
+                string = ", ".join(temp)
+
+                # create array literal
+                file.write(f"{key} = Literal[{string}]\n")
+                if key == "status_mu" or key == "status_mcu" or key == "status_gen":
+                    file.write(f"{key.upper()}: list[{key}] = [{string}]\n")
+                else:
+                    file.write(f"{key.upper()}: list[str] = [{string}]\n")
+            # key array
+            string = ", ".join(keys)
+            file.write(f"keys = Literal[{string}]\n")
+            # all buttons
+            string = ", ".join(all)
+            file.write(f"all_buttons = Literal[{string}]\n")
 
 
 if __name__ == "__main__":

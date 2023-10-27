@@ -45,7 +45,9 @@ AWS_STATUS = get_args(aws_status)
 
 tabs_list = Literal["manual", "semi", "auto"]
 push_option = Literal["push", "release"]
-class_option = Literal["manual", "semi", "auto", "serial", "gui", "smart"]
+class_option = Literal[
+    "manual", "semi", "auto", "serial", "gui", "smart", "mu0", "mcu0"
+]
 level_option = Literal["info", "error", "warning"]
 auto_option = Literal["start", "pause", "stop", "continuos"]
 aux_option = Literal["enable", "hlv", "mag"]
