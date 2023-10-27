@@ -10,7 +10,7 @@ class ToplevelWindow(CTkToplevel):
         self.gui: GUI = args[0]
         self.all: list[all_calibrations] = ALL_CALIBRATIONS  # type: ignore
         self.attributes("-topmost", True)  # type: ignore
-        self.geometry("300x500")
+        self.geometry("300x510")
         self.label = CTkLabel(
             self, text="Select Calibration to run \n Close to save", font=self.gui.font_title  # type: ignore
         )

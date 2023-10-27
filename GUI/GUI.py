@@ -36,7 +36,7 @@ class GUI(CTk):
         self.toplevel_window: CTkToplevel
         self.app_state: auto_option = "stop"
         self.attributes("-topmost", True)  # type: ignore
-        self.geometry("350x350")  # type: ignore
+        self.geometry("350x325")  # type: ignore
         self.title("FPD Calibration bot")  # type: ignore
         self.resizable(False, False)  # type: ignore
         self.protocol("WM_DELETE_WINDOW", self.on_closing)  # type: ignore
