@@ -31,21 +31,15 @@ class Auxiliary(CTk):
             text="Toggle MAG",
             command=lambda: self.action("mag"),
         )
-        self.button_calib_selector = CTkButton(
-            f, font=output, text="Select Calibrations", command=self.selector
-        )
 
         self.serial = app.com
         f.grid_columnconfigure(0, weight=1)
         f.grid_columnconfigure(1, weight=1)
         f.grid_columnconfigure(2, weight=1)
-        f.grid_rowconfigure(0, weight=1)
-        f.grid_rowconfigure(1, weight=1)
         self.button_ment_mode.grid(row=0, column=0, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
         self.button_toggle_HVL.grid(row=0, column=1, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
         self.button_toggle_MAG.grid(row=0, column=2, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
-        self.button_calib_selector.grid(row=1, column=0, columnspan=2, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
-        # self.show()
+        self.show()
 
     def action(self, button: aux_option) -> None:
         if button == "enable":
@@ -56,9 +50,6 @@ class Auxiliary(CTk):
 
         elif button == "mag":
             self.app.mu_interactor.toggle_MAG()
-
-    def selector(self) -> None:
-        self.app.open_toplevel()
 
     def show(self):
         self.frame_auxiliary.pack(pady=PADY_FRAME, padx=PADX, side=TOP, fill=BOTH)  # type: ignore

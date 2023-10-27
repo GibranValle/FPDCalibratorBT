@@ -10,10 +10,15 @@ class Auto(CTk):
         super().__init__()  # type: ignore
         self.frame_auto = CTkFrame(app, fg_color=BG_COLOR_1)
         f = self.frame_auto
+        output = app.font_output
         text = app.font_text
         title = app.font_title
         self.app = app
         self.label_auto = CTkLabel(f, font=title, text="Auto mode")
+
+        self.button_calib_selector = CTkButton(
+            f, font=output, text="Select Calibrations", command=self.selector
+        )
 
         self.button_auto_start = CTkButton(
             f,
@@ -46,14 +51,23 @@ class Auto(CTk):
             command=lambda: self.action("continuos"),
         )
 
+        f.grid_rowconfigure(0, weight=1)
+        f.grid_rowconfigure(1, weight=1)
+        f.grid_rowconfigure(2, weight=1)
+
         f.grid_columnconfigure(0, weight=1)
         f.grid_columnconfigure(1, weight=1)
         f.grid_columnconfigure(2, weight=1)
-        self.label_auto.grid(row=0, column=0, columnspan=4, pady=PADY_INSIDE_FRAME, padx=PADX)  # type: ignore
-        self.button_auto_start.grid(row=1, column=0, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
-        self.button_auto_pause.grid(row=1, column=1, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
-        self.button_auto_stop.grid(row=1, column=2, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
+
+        self.label_auto.grid(row=0, column=0, columnspan=3, pady=PADY_INSIDE_FRAME, padx=PADX)  # type: ignore
+        self.button_calib_selector.grid(row=1, column=0, columnspan=3, pady=PADY_INSIDE_LAST, sticky="we", padx=PADX_INSIDE_FRAME)  # type: ignore
+        self.button_auto_start.grid(row=2, column=0, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
+        self.button_auto_pause.grid(row=2, column=1, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
+        self.button_auto_stop.grid(row=2, column=2, pady=PADY_INSIDE_LAST, sticky="we", padx=2)  # type: ignore
         # self.show()
+
+    def selector(self) -> None:
+        self.app.open_toplevel()
 
     def action(self, button: auto_option) -> None:
         self.app.change_app_state(button)

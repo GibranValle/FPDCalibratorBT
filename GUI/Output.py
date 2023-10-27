@@ -39,7 +39,7 @@ class Output(CTk):
         self.output_b.configure(text="...")  # type: ignore
 
     def restart(self, msg: str = ""):
-        self.output_a.configure(text=f"Could not start{msg}")  # type: ignore
+        self.output_a.configure(text=f"Could not start {msg}")  # type: ignore
         self.output_b.configure(text="Please try again")  # type: ignore
 
     def clear_all(self):

@@ -40,6 +40,7 @@ class GUI(CTk):
         self.title("FPD Calibration bot")  # type: ignore
         self.resizable(False, False)  # type: ignore
         self.protocol("WM_DELETE_WINDOW", self.on_closing)  # type: ignore
+        self.lower()
         self.logger = Logger()
 
         self.com = SerialCom(self)
@@ -48,6 +49,7 @@ class GUI(CTk):
         self.selected_tab = "manual"
         self.selected_cal: list[all_calibrations] = []
         self.output = Output(self)
+        self.aux = Auxiliary(self)
         self.manual = Manual(self)
         self.semi = Semi(self)
         self.auto = Auto(self)
@@ -55,7 +57,6 @@ class GUI(CTk):
         self.mu_interactor = MU0(self)
         self.mcu_interactor = MCU0(self)
         self.smart = SmartExposure(self)
-        self.aux = Auxiliary(self)
         self.log("gui", "info", "Gui initialization completed")
 
     def change_tab(self, tab: tabs_list):
@@ -63,17 +64,14 @@ class GUI(CTk):
             self.manual.show()
             self.semi.hide()
             self.auto.hide()
-            self.aux.hide()
         elif tab == "semi":
             self.manual.hide()
             self.semi.show()
             self.auto.hide()
-            self.aux.hide()
         elif tab == "auto":
             self.manual.hide()
             self.semi.hide()
             self.auto.show()
-            self.aux.show()
 
     def on_closing(self, event: int = 0):
         print("closing")
@@ -92,10 +90,13 @@ class GUI(CTk):
         try:
             if not self.toplevel_window.winfo_exists():
                 self.toplevel_window = ToplevelWindow(self)
-            else:
-                self.toplevel_window.focus()
+                self.toplevel_window.focus_force()
         except AttributeError:
             self.toplevel_window = ToplevelWindow(self)
+            self.toplevel_window.focus_force()
+            self.update()
+        else:
+            self.toplevel_window.focus()
 
     def change_app_state(self, state: auto_option) -> None:
         self.app_state = state
