@@ -191,6 +191,13 @@ class SmartExposure:
             except RuntimeError:
                 self.output.exposure_aborted()
                 break
+
+            try:
+                self.app.com.communicate("L")
+            except ConnectionError:
+                self.output.exposure_abnormal()
+                return
+
             try:
                 total += self.wait_exposure_start(exposures)
                 if self.is_calib_passed():
@@ -198,6 +205,12 @@ class SmartExposure:
             except RuntimeError:
                 self.output.exposure_aborted()
                 break
+
+            try:
+                self.app.com.communicate("X")
+            except ConnectionError:
+                self.output.exposure_abnormal()
+                return
 
             try:
                 total += self.wait_exposure_end(exposures)
@@ -251,6 +264,12 @@ class SmartExposure:
             except RuntimeError:
                 print("standby signal not found")
                 raise RuntimeError("aborted")
+            
+            try:
+                self.app.com.communicate("S")
+            except ConnectionError:
+                self.output.exposure_abnormal()
+                return
 
             try:
                 total += self.wait_exposure_start(exposures)
@@ -259,6 +278,12 @@ class SmartExposure:
             except RuntimeError:
                 print("exposure signal not found")
                 raise RuntimeError("aborted")
+            
+            try:
+                self.app.com.communicate("X")
+            except ConnectionError:
+                self.output.exposure_abnormal()
+                return
 
             try:
                 total += self.wait_exposure_end(exposures)

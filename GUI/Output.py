@@ -94,6 +94,10 @@ class Output(CTk):
         self.output_a.configure(text="Exposure aborted!")  # type: ignore
         self.output_b.configure(text=f"-----------------")  # type: ignore
 
+    def exposure_abnormal(self):
+        self.output_a.configure(text="Exposure abnormal!")  # type: ignore
+        self.output_b.configure(text=f"Please verify")  # type: ignore
+
     @staticmethod
     def convert_seconds(secs: int) -> str:
         temp = secs

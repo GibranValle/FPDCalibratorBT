@@ -17,7 +17,7 @@ class MCU0(Interaction):
             self._changeWindow("MCU0")
             self.app.log("mcu0", "info", "Program exists changing window")
             return True
-        if self._openApp("MU"):
+        if self._openApp("MCU"):
             self.app.log("mcu0", "info", "Program not exists opening")
             return True
         self.app.log("mcu0", "error", "Program not installed")
