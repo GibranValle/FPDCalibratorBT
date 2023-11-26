@@ -52,17 +52,15 @@ class SerialCom:
         """
         if self.offline:
             self.app.log("serial", "warning", "Working in offline mode")
-            raise ConnectionError
 
         if not self.isListening:
             self.app.log("serial", "warning", "Working in offline mode")
-            raise ConnectionError
 
         res = self.write2Read(message)
         if res == message:
             return True
         self.app.log("serial", "error", "Communication error")
-        raise ConnectionAbortedError("message was not responded")
+        raise ConnectionError("message was not responded")
 
     def start(self, variant: exposure_option):
         message = "S" if variant == "short" else "L"
