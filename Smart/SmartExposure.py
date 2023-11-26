@@ -51,10 +51,11 @@ class SmartExposure:
             self.output.waiting_calib_start(i)
             sleep(SLEEP_TIME)
             self._get_mcu_state(calibration)
-            print(self.status_mcu)
             if self.app.app_state == "pause":
-                self.output.in_pause(i)
-                continue
+                while self.app.app_state == "pause":
+                    if self.app.app_state != "pause":
+                        break
+                    self.output.in_pause(i)
             elif self.app.app_state == "stop":
                 self.output.exposure_aborted()
                 self.log("smart", "error", "request of abortion")
@@ -79,9 +80,11 @@ class SmartExposure:
                     "smart", "info", f"xray gen is ready for exposure, waited: {i}"
                 )
                 break
-            elif self.app.app_state == "pause":
-                self.output.in_pause(i)
-                continue
+            if self.app.app_state == "pause":
+                while self.app.app_state == "pause":
+                    if self.app.app_state != "pause":
+                        break
+                    self.output.in_pause(i)
             elif self.app.app_state == "stop":
                 self.output.exposure_aborted()
                 self.log("smart", "error", "request of abortion")
@@ -89,18 +92,21 @@ class SmartExposure:
             total += i
         return total
 
-    def _wait_standby(self, exposure: int = 0) -> int:
+    def _wait_standby(self, count: int = 0) -> int:
         total = 0
         for i in range(MAX_TIME_STANDBY):
-            sleep(SLEEP_TIME)
             self._get_mu_state("standby")
             self._get_gen_state("push")
             self.output.waiting_ready(i)
-            if exposure > 0 and self._is_calib_passed():
-                return i
+            sleep(SLEEP_TIME)
+            if count > 0:
+                if self._is_calib_passed():
+                    break
             if self.app.app_state == "pause":
-                self.output.in_pause(i)
-                continue
+                while self.app.app_state == "pause":
+                    if self.app.app_state != "pause":
+                        break
+                    self.output.in_pause(i)
             elif self.app.app_state == "stop":
                 self.output.exposure_aborted()
                 self.log("smart", "error", "request of abortion")
@@ -113,18 +119,21 @@ class SmartExposure:
             total += i
         return total
 
-    def _wait_exposure_start(self, exposure: int = 0) -> int:
+    def _wait_exposure_start(self) -> int:
         total = 0
+        sleep(1)
         for i in range(MAX_TIME_BEFORE_EXPOSURE):
-            sleep(SLEEP_TIME)
             self._get_mu_state("exposure")
             self._get_gen_state("exposing")
             self.output.waiting_exposure_start(i)
-            if exposure > 0 and self._is_calib_passed():
+            sleep(SLEEP_TIME)
+            if self._is_calib_passed():
                 return i
             if self.app.app_state == "pause":
-                self.output.in_pause(i)
-                continue
+                while self.app.app_state == "pause":
+                    if self.app.app_state != "pause":
+                        break
+                    self.output.in_pause(i)
             elif self.app.app_state == "stop":
                 self.output.exposure_aborted()
                 self.log("smart", "error", "request of abortion")
@@ -135,18 +144,20 @@ class SmartExposure:
             total += i
         return total
 
-    def _wait_exposure_end(self, exposure: int = 0) -> int:
+    def _wait_exposure_end(self) -> int:
         total = 0
         for i in range(MAX_TIME_EXPOSURE):
-            sleep(SLEEP_TIME)
             self._get_mu_state("blocked")
             self._get_gen_state("release")
             self.output.waiting_exposure_end(i)
-            if exposure > 0 and self._is_calib_passed():
+            sleep(SLEEP_TIME)
+            if self._is_calib_passed():
                 return i
             if self.app.app_state == "pause":
-                self.output.in_pause(i)
-                continue
+                while self.app.app_state == "pause":
+                    if self.app.app_state != "pause":
+                        break
+                    self.output.in_pause(i)
             elif self.app.app_state == "stop":
                 self.output.exposure_aborted()
                 self.log("smart", "error", "request of abortion")
@@ -159,8 +170,7 @@ class SmartExposure:
 
     def _is_calib_passed(self) -> bool:
         self._get_mcu_state("pasar")
-        self._get_mcu_state("saltar")
-        if self.status_mcu == "pasar" or self.status_mcu == "saltar":
+        if self.status_mcu == "pasar":
             return True
         return False
 
@@ -238,6 +248,7 @@ class SmartExposure:
         self.app.output.change_b(f"------------------------------")
 
     def start_smart_exposure(self):
+        # for semi mode
         self.output.clear_all()
         total = 0
         try:
@@ -248,50 +259,34 @@ class SmartExposure:
             self.app.change_app_state("stop")
             self.output.exposure_aborted()
             return
-        self.output.waiting_exposure_end(total)
+        self.output.exposure_success(total)
         self.app.change_app_state("stop")
+        self.app.semi.action("stop")
 
     def start_smart_loop(self):
-        print("smart loop")
+        # for semi mode
         self.output.clear_all()
         total = 0
         exposures = 0
         while True:
             try:
-                total += self._wait_standby(exposures)
-                if self._is_calib_passed():
-                    break
-            except RuntimeError:
-                self.output.exposure_aborted()
-                break
-
-            try:
-                self.app.com.communicate("L")
-            except ConnectionError:
-                self.output.exposure_abnormal()
-                return
-
-            try:
-                total += self._wait_exposure_start(exposures)
-                if self._is_calib_passed():
-                    break
-            except RuntimeError:
-                self.output.exposure_aborted()
-                break
-
-            try:
-                total += self._wait_exposure_end(exposures)
-                if self._is_calib_passed():
-                    break
+                total += self._wait_standby(count=exposures)
+                total += self._wait_exposure_start()
+                total += self._wait_exposure_end()
                 exposures += 1
+                if self._is_calib_passed():
+                    break
             except RuntimeError:
+                self.app.change_app_state("stop")
                 self.output.exposure_aborted()
                 break
+        self.output.loop_success(exposures, total)
         self.app.change_app_state("stop")
+        self.app.semi.action("stop")
 
+    # AUTO MODE ----------------------------------
     def auto_loop(self, calibration: status_mcu):
         online = not self.app.com.is_offline()
-        print("auto loop")
         self.output.clear_all()
         total = 0
         try:
@@ -311,7 +306,6 @@ class SmartExposure:
         return total
 
     def auto_loop_exposure(self, calibration: status_mcu):
-        print("auto loop")
         self.output.clear_all()
         total = 0
         exposures = 0
@@ -325,13 +319,13 @@ class SmartExposure:
                 raise RuntimeError("aborted")
 
             try:
-                total += self._wait_standby(exposures)
+                total += self._wait_standby()
                 if self._is_calib_passed():
                     break
             except RuntimeError:
                 print("standby signal not found")
                 raise RuntimeError("aborted")
-            
+
             try:
                 self.app.com.communicate("S")
             except ConnectionError:
@@ -339,13 +333,13 @@ class SmartExposure:
                 return
 
             try:
-                total += self._wait_exposure_start(exposures)
+                total += self._wait_exposure_start()
                 if self._is_calib_passed():
                     break
             except RuntimeError:
                 print("exposure signal not found")
                 raise RuntimeError("aborted")
-            
+
             try:
                 self.app.com.communicate("X")
             except ConnectionError:
@@ -353,7 +347,7 @@ class SmartExposure:
                 return
 
             try:
-                total += self._wait_exposure_end(exposures)
+                total += self._wait_exposure_end()
                 if self._is_calib_passed():
                     break
                 exposures += 1

@@ -63,33 +63,38 @@ class Semi(CTk):
         # self.show()
 
     def action(self, button: auto_option) -> None:
-        self.app.change_app_state(button)
         if button == "start":
             self.app.log('semi', 'info', 'Request exposure start...')
             self.button_semi_start.configure(state=DISABLED)  # type: ignore
             self.button_semi_pause.configure(state=NORMAL)  # type: ignore
             self.button_semi_stop.configure(state=NORMAL)  # type: ignore
             self.button_semi_continuous.configure(state=DISABLED)  # type: ignore
-            Thread(target=self.app.smart.start_smart_exposure).start()
+            if(self.app.app_state != 'pause'):
+                Thread(target=self.app.smart.start_smart_exposure).start()
+            self.app.change_app_state(button)
         elif button == "pause":
+            self.app.change_app_state(button)
             self.app.log('semi', 'info', 'Request exposure pause...')
             self.button_semi_start.configure(state=NORMAL)  # type: ignore
             self.button_semi_pause.configure(state=DISABLED)  # type: ignore
             self.button_semi_stop.configure(state=NORMAL)  # type: ignore
             self.button_semi_continuous.configure(state=DISABLED)  # type: ignore
         elif button == "stop":
+            self.app.change_app_state(button)
             self.app.log('semi', 'info', 'Request exposure stop...')
             self.button_semi_start.configure(state=NORMAL)  # type: ignore
             self.button_semi_pause.configure(state=NORMAL)  # type: ignore
             self.button_semi_stop.configure(state=NORMAL)  # type: ignore
             self.button_semi_continuous.configure(state=NORMAL)  # type: ignore
         elif button == "continuos":
+            self.app.change_app_state(button)
             self.app.log('semi', 'info', 'Request loop start...')
             self.button_semi_start.configure(state=DISABLED)  # type: ignore
             self.button_semi_pause.configure(state=NORMAL)  # type: ignore
             self.button_semi_stop.configure(state=NORMAL)  # type: ignore
             self.button_semi_continuous.configure(state=DISABLED)  # type: ignore
             Thread(target=self.app.smart.start_smart_loop).start()
+            
 
     def show(self):
         self.frame_semi.pack(pady=PADY_FRAME, padx=PADX, side=TOP, fill=BOTH)  # type: ignore

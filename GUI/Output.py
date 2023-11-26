@@ -86,6 +86,11 @@ class Output(CTk):
         self.output_a.configure(text="Exposure completed!")  # type: ignore
         self.output_b.configure(text=f"total time waited: {time}")  # type: ignore
 
+    def loop_success(self, count: int, secs: int):
+        time = self.convert_seconds(secs)
+        self.output_a.configure(text=f"Exposure count: {count}")  # type: ignore
+        self.output_b.configure(text=f"total time waited: {time}")  # type: ignore        
+
     def calibration_aborted(self):
         self.output_a.configure(text="Calibration aborted!")  # type: ignore
         self.output_b.configure(text=f"-----------------")  # type: ignore

@@ -45,7 +45,8 @@ class ComputerVision:
             dir: keys = "status_mu"
         path: str = self.image_repository[dir][button]
         try:
-            x, y = locateCenterOnScreen(path)  # type: ignore
+            confidence = 0.95
+            x, y = locateCenterOnScreen(path, confidence=confidence)  # type: ignore
             return x, y  # type: ignore
         except TypeError:
             return -1, -1
