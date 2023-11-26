@@ -4,6 +4,7 @@ import serial.tools.list_ports
 from serial.tools.list_ports_common import ListPortInfo
 from serial import Serial
 from typing import Any
+from GUI.constants import *
 
 
 class SerialCom:
@@ -62,6 +63,25 @@ class SerialCom:
             return True
         self.app.log("serial", "error", "Communication error")
         raise ConnectionAbortedError("message was not responded")
+
+    def start(self, variant: exposure_option):
+        message = "S" if variant == "short" else "L"
+        try:
+            self.communicate(message)
+            return True
+        except ConnectionAbortedError:
+            raise ConnectionAbortedError("message was not responded")
+        except ConnectionError:
+            return True
+
+    def end(self):
+        try:
+            self.communicate("X")
+            return True
+        except ConnectionAbortedError:
+            raise ConnectionAbortedError("message was not responded")
+        except ConnectionError:
+            return True
 
     def endListening(self):
         try:
