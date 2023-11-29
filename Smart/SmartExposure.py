@@ -253,7 +253,9 @@ class SmartExposure:
         total = 0
         try:
             total += self._wait_standby()
+            self.app.com.start(variant='short')
             total += self._wait_exposure_start()
+            self.app.com.end()
             total += self._wait_exposure_end()
         except RuntimeError:
             self.app.change_app_state("stop")
@@ -271,7 +273,9 @@ class SmartExposure:
         while True:
             try:
                 total += self._wait_standby(count=exposures)
+                self.app.com.start(variant='short')
                 total += self._wait_exposure_start()
+                self.app.com.end()
                 total += self._wait_exposure_end()
                 exposures += 1
                 if self._is_calib_passed():
