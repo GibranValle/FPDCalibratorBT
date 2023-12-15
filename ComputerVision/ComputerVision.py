@@ -13,6 +13,24 @@ class ComputerVision:
         self.status_gen: status_gen = "idle"
         self.image_repository = image_repository
 
+    def get_status(
+        self, button: status_gen | status_mcu | status_mu
+    ) -> tuple[int, int]:
+        dir: keys = "status_gen"
+        if button in STATUS_GEN:
+            dir: keys = "status_gen"
+        elif button in STATUS_MCU:
+            dir: keys = "status_mcu"
+        elif button in STATUS_MU:
+            dir: keys = "status_mu"
+        try:
+            path: str = self.image_repository[dir][button]
+            confidence = 0.95
+            x, y = locateCenterOnScreen(path, confidence=confidence)  # type: ignore
+            return x, y  # type: ignore
+        except TypeError:
+            return -1, -1
+
     def get_icon_coords(self, button: all_buttons) -> tuple[int, int]:
         dir: keys = "aws"
         if button in AWS:
@@ -37,12 +55,6 @@ class ComputerVision:
             dir: keys = "mu_tabs"
         elif button in RU:
             dir: keys = "ru"
-        elif button in STATUS_GEN:
-            dir: keys = "status_gen"
-        elif button in STATUS_MCU:
-            dir: keys = "status_mcu"
-        elif button in STATUS_MU:
-            dir: keys = "status_mu"
         path: str = self.image_repository[dir][button]
         try:
             confidence = 0.95
