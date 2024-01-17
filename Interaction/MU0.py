@@ -111,9 +111,9 @@ class MU0(Interaction):
         online = not self.app.com.is_offline()
         try:
             if self._open_MUTL_MU():
-                self.app.output.clicked("MUTL")
+                self.app.output_log.append("MUTL opened")
             else:
-                self.app.output.restart("MUTL")
+                self.app.output_log.append("MUTL could not be opened, Retry")
                 if online:
                     raise RuntimeError("MUTL not installed")
         except RuntimeError:
@@ -121,9 +121,9 @@ class MU0(Interaction):
 
         try:
             if self._click_generator_tab():
-                self.app.output.clicked("Generator tab")
+                self.app.output_log.append("Generator tab clicked")
             else:
-                self.app.output.restart("Generator tab")
+                self.app.output_log.append("Generator tab could not be clicked")
                 if online:
                     raise RuntimeError("GENERATOR TAB NOT VISIBLE")
         except RuntimeError:
@@ -133,12 +133,13 @@ class MU0(Interaction):
             x, y = self.cv.get_icon_coords("enable_ment")
             if x > 0 and y > 0:
                 self._click_point(x, y)
-                self.app.output.clicked("Enable ment mode")
+                self.app.output_log.append("Enable ment mode clicked ")
                 return
-
             self.app.output.restart("MUTL")
+            self.app.output_log.append("MUTL could not be opened, Retry")
             if online:
-                raise RuntimeError("enable ment mode button not visible")
+                self.app.output_log.append("Enable ment mode button not visible")
+                raise RuntimeError("Enable ment mode button not visible")
         except RuntimeError:
             return
 
@@ -146,10 +147,11 @@ class MU0(Interaction):
         online = not self.app.com.is_offline()
         try:
             if self._open_MUTL_MU():
-                self.app.output.clicked("MUTL")
+                self.app.output_log.append("MUTL opened")
             else:
                 self.app.output.restart("MUTL")
                 if online:
+                    self.app.output_log.append("MUTL not installed")
                     raise RuntimeError("MUTL not installed")
         except RuntimeError:
             return
@@ -158,8 +160,9 @@ class MU0(Interaction):
             if self._click_calibration_tab():
                 self.app.output.clicked("Calibration tab")
             else:
-                self.app.output.restart("MUTL")
+                self.app.output_log.append("MUTL could not be opened, Retry")
                 if online:
+                    self.app.output_log.append("GENERATOR TAB NOT VISIBLE")
                     raise RuntimeError("GENERATOR TAB NOT VISIBLE")
         except RuntimeError:
             return
@@ -167,12 +170,13 @@ class MU0(Interaction):
         try:
             x, y = self.cv.get_icon_coords("MAG")
             if x > 0 and y > 0:
-                self._click_point(x, y)
-                self.app.output.clicked("MAG")
+                self._click_point(x, y)                
+                self.app.output_log.append("MAG clicked")
                 return
 
             self.app.output.restart("MUTL")
             if online:
+                self.app.output_log.append("MAG button not visible")
                 raise RuntimeError("MAG button not visible")
         except RuntimeError:
             return
@@ -181,20 +185,22 @@ class MU0(Interaction):
         online = not self.app.com.is_offline()
         try:
             if self._open_MUTL_MU():
-                self.app.output.clicked("MUTL")
+                self.app.output_log.append("MUTL opened")
             else:
-                self.app.output.restart("MUTL")
+                self.app.output_log.append("MUTL could not be opened, Retry")
                 if online:
+                    self.app.output_log.append("MUTL not installed")
                     raise RuntimeError("MUTL not installed")
         except RuntimeError:
             return
 
         try:
             if self._click_calibration_tab():
-                self.app.output.clicked("Calibration tab")
+                self.app.output_log.append("Calibration tab clicked opened")
             else:
-                self.app.output.restart("MUTL")
+                self.app.output_log.append("MUTL could not be opened, Retry")
                 if online:
+                    self.app.output_log.append("Calibration tab not visible")
                     raise RuntimeError("Calibration tab not visible")
         except RuntimeError:
             return
@@ -203,11 +209,12 @@ class MU0(Interaction):
             x, y = self.cv.get_icon_coords("HVL")
             if x > 0 and y > 0:
                 self._click_point(x, y)
-                self.app.output.clicked("HVL")
+                self.app.output_log.append("HVL clicked")
                 return
 
-            self.app.output.restart("MUTL")
+            self.app.output_log.append("MUTL could not be opened, Retry")
             if online:
+                self.app.output_log.append("Calibration tab not visible")
                 raise RuntimeError("Calibration tab not visible")
         except RuntimeError:
             return

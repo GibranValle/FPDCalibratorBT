@@ -20,7 +20,6 @@ class Output(CTk):
         self.output_b.grid(row=1, column=0, pady=PADY_INSIDE_LAST, padx=PADX_INSIDE_FRAME, sticky="w")  # type: ignore
 
         self.serial = app.com
-        self.show()
 
     def show(self):
         self.frame_output.pack(pady=PADY_FRAME, padx=10, side=TOP, fill=BOTH)  # type: ignore

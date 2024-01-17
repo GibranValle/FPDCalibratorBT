@@ -18,6 +18,8 @@ INFO_COLOR_HOVER = "#002255"
 ERR_COLOR = "#880015"
 ERR_COLOR_HOVER = "#6E0011"
 DISABLED_COLOR = "#555555"
+WARNING_COLOR = "#FFC000"
+WARNING_COLOR_HOVER = "#C09200"
 
 PLAY = "\u23F5"
 PAUSE = "\u23F8"
@@ -51,8 +53,10 @@ class_option = Literal[
 ]
 level_option = Literal["info", "error", "warning"]
 auto_option = Literal["start", "pause", "stop", "continuos"]
-aux_option = Literal["enable", "hlv", "mag"]
-
+aux_option = Literal["enable", "hlv", "mag", "select", "calib", "fpd"]
+dur_option = Literal["short", "long"]
+mode_option = Literal["mA", "FPD", "manual"]
+ok_option = Literal["on", "off"]
 
 all_calibrations = Literal[
     "offset",
