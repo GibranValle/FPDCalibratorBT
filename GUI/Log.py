@@ -12,7 +12,7 @@ class Log(CTk):
         title = app.font_title
         self.app = app
         self.log_label = CTkLabel(f, font=title, text="LOG")
-        self.textbox = CTkTextbox(master=f, corner_radius=0, text_color="white", width=200)
+        self.textbox = CTkTextbox(master=f, corner_radius=0, text_color="white")
         self.frame_log.grid_columnconfigure(0, weight=1)
         self.frame_log.rowconfigure(0, weight=1)
         self.frame_log.rowconfigure(1, weight=1)

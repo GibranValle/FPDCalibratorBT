@@ -48,18 +48,20 @@ class GUI(CTk):
         self.duration: dur_option = 'short'
         self.mode: mode_option = 'FPD'
         self.click_ok: ok_option = 'on'
+        self.autoselect: ok_option = 'off'
+        self.current_calib = 'None'
 
         # functions
         self.selected_cal: list[all_calibrations] = []
         self.com = SerialCom(self)
 
-        self.grid_columnconfigure(0, weight=3)
-        self.grid_columnconfigure(1, weight=3)
-        self.grid_columnconfigure(2, weight=1)
-        self.grid_columnconfigure(3, weight=1)
-        self.rowconfigure(0, weight=1)
-        self.rowconfigure(1, weight=1)
-        self.rowconfigure(2, weight=1)
+        self.grid_columnconfigure(0, weight=1, minsize=250)
+        self.grid_columnconfigure(1, weight=1, minsize=200)
+        self.grid_columnconfigure(2, weight=1, minsize=100)
+        self.grid_columnconfigure(3, weight=1, minsize=250)
+        self.rowconfigure(0, weight=1, minsize=135)
+        self.rowconfigure(1, weight=1, minsize=135)
+        self.rowconfigure(2, weight=1, minsize=75)
 
         # GUI
         self.vision = Vision(self)

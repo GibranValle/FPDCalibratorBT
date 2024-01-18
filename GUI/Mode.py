@@ -51,17 +51,24 @@ class Mode(CTk):
         self.button_ok = CTkButton(
             f,
             font=text,
-            text="Autoclick",
+            text="Autoclick ok",
             fg_color=INFO_COLOR,
             hover_color=INFO_COLOR_HOVER,
             command=lambda: self.mode("ok"),
         )
-
-        self.autoclick_label = CTkLabel(f, font=text, text="on", text_color=OK_COLOR)
+        self.button_auto_select = CTkButton(
+            f,
+            font=text,
+            text="Autostart calib",
+            fg_color=INFO_COLOR,
+            hover_color=INFO_COLOR_HOVER,
+            command=lambda: self.mode("autostart"),
+        )
 
         self.serial = app.com
         self.frame_mode.grid_columnconfigure(0, weight=1)
         self.frame_mode.grid_columnconfigure(1, weight=1)
+        self.frame_mode.grid_columnconfigure(2, weight=1)
         self.frame_mode.rowconfigure(0, weight=1)
         self.frame_mode.rowconfigure(1, weight=1)
 
@@ -70,7 +77,7 @@ class Mode(CTk):
         self.button_FPD.grid(row=0, column=1, pady=(10, 5), sticky="NSEW", padx=5)  # type: ignore
         self.button_mA.grid(row=1, column=1, pady=(5, 10), sticky="NSEW", padx=5)  # type: ignore
         self.button_ok.grid(row=0, column=2, pady=(10, 5), sticky="NSEW", padx=(5, 10))  # type: ignore
-        self.autoclick_label.grid(row=1, column=2, pady=(5, 10), sticky="NSEW", padx=(5, 10))  # type: ignore
+        self.button_auto_select.grid(row=1, column=2, pady=(5, 10), sticky="NSEW", padx=(5, 10))  # type: ignore
         self.update()
         self.show()
 
@@ -78,25 +85,35 @@ class Mode(CTk):
         if option == "short":
             self.app.duration = "short"
             self.app.mode = "manual"
+            self.app.autoselect = "off"
         elif option == "long":
             self.app.duration = "long"
             self.app.mode = "manual"
+            self.app.autoselect = "off" 
         elif option == "mA":
             self.app.duration = "long"
             self.app.mode = "mA"
+            self.app.autoselect = "off" 
         elif option == "FPD":
             self.app.duration = "short"
             self.app.mode = "FPD"
-        elif option == "auto":
-            self.app.duration = "short"
-            self.app.mode = "FPD"
+            self.app.autoselect = "off" 
         elif option == "ok":
             if self.app.click_ok == "on":
                 self.app.click_ok = "off"
-                self.autoclick_label.configure(text_color=WARNING_COLOR, text="off")  # type: ignore
+                self.button_ok.configure(text_color=DISABLED_COLOR)  # type: ignore
             elif self.app.click_ok == "off":
                 self.app.click_ok = "on"
-                self.autoclick_label.configure(text_color=OK_COLOR, text="on")  # type: ignore
+                self.button_ok.configure(text_color='white')  # type: ignore
+        elif option == "autostart":
+            if self.app.autoselect == "on":
+                self.app.mode = "FPD"
+                self.app.autoselect = "off"
+                self.button_auto_select.configure(text_color=DISABLED_COLOR)  # type: ignore
+            elif self.app.autoselect == "off":
+                self.app.mode = "auto"
+                self.app.autoselect = "on"
+                self.button_auto_select.configure(text_color='white')  # type: ignore
         self.update()
         self.app.vision.update()
 
@@ -108,14 +125,22 @@ class Mode(CTk):
             self.button_long.configure(text_color="white")  # type: ignore
             self.button_short.configure(text_color=DISABLED_COLOR)  # type: ignore
         if self.app.mode == "FPD":
+            self.button_auto_select.configure(text_color=DISABLED_COLOR)  # type: ignore
             self.button_FPD.configure(text_color="white")  # type: ignore
             self.button_mA.configure(text_color=DISABLED_COLOR)  # type: ignore
         elif self.app.mode == "mA":
+            self.button_auto_select.configure(text_color=DISABLED_COLOR)  # type: ignore
             self.button_mA.configure(text_color="white")  # type: ignore
             self.button_FPD.configure(text_color=DISABLED_COLOR)  # type: ignore
         elif self.app.mode == "manual":
+            self.button_auto_select.configure(text_color=DISABLED_COLOR)  # type: ignore
             self.button_mA.configure(text_color=DISABLED_COLOR)  # type: ignore
             self.button_FPD.configure(text_color=DISABLED_COLOR)  # type: ignore
+        elif self.app.mode == "auto":
+            self.button_short.configure(text_color=DISABLED_COLOR)  # type: ignore
+            self.button_long.configure(text_color=DISABLED_COLOR)  # type: ignore
+            self.button_mA.configure(text_color=DISABLED_COLOR)  # type: ignore
+            self.button_FPD.configure(text_color=DISABLED_COLOR)  # type: ignore            
 
     def show(self):
         self.frame_mode.grid(row=1, column=0, columnspan=3, sticky="NSEW", padx=(20, 10), pady=10)  # type: ignore

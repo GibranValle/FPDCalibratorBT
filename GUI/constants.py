@@ -55,7 +55,7 @@ level_option = Literal["info", "error", "warning"]
 auto_option = Literal["start", "pause", "stop", "continuos"]
 aux_option = Literal["enable", "hlv", "mag", "select", "calib", "fpd"]
 dur_option = Literal["short", "long"]
-mode_option = Literal["mA", "FPD", "manual"]
+mode_option = Literal["mA", "FPD", "manual", "auto"]
 ok_option = Literal["on", "off"]
 
 all_calibrations = Literal[
