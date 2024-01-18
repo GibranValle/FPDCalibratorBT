@@ -52,7 +52,7 @@ class_option = Literal[
     "manual", "semi", "auto", "serial", "gui", "smart", "mu0", "mcu0"
 ]
 level_option = Literal["info", "error", "warning"]
-auto_option = Literal["start", "pause", "stop", "continuos"]
+control_option = Literal["start", "pause", "stop", "continuos", "expand"]
 aux_option = Literal["enable", "hlv", "mag", "select", "calib", "fpd"]
 dur_option = Literal["short", "long"]
 mode_option = Literal["mA", "FPD", "manual", "auto"]

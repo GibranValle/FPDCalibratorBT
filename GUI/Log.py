@@ -21,6 +21,10 @@ class Log(CTk):
         self.show()
 
     def append(self, text: str) -> None:
+        if "error" in text.lower():
+            self.log_label.configure(text_color=WARNING_COLOR, text='LOG ERROR!') # type: ignore
+        else:
+            self.log_label.configure(text_color='white', text='LOG') # type: ignore
         self.textbox.insert(END, f"{text}\n")  # type: ignore
 
     def show(self):

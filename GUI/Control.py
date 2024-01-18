@@ -12,7 +12,6 @@ class Control(CTk):
         f = self.frame_control
         self.app = app
         title = app.font_title
-        self.com = app.com
 
         self.button_start = CTkButton(
             f,
@@ -54,7 +53,6 @@ class Control(CTk):
             command=lambda: self.action("continuos"),
         )
 
-        self.serial = app.com
         self.frame_control.grid_columnconfigure(0, weight=1)
         self.frame_control.grid_columnconfigure(1, weight=1)
         self.frame_control.grid_columnconfigure(2, weight=1)
@@ -70,8 +68,12 @@ class Control(CTk):
         self.button_stop.configure(state=DISABLED)  # type: ignore
         self.show()
 
-    def action(self, button: auto_option | str) -> None:
+    def action(self, button: control_option) -> None:
         if button == "start":
+            if self.app.mode == 'auto':
+                self.app.output_log.append("Error: Usar botón continuo")
+                self.app.log("auto", "error", "Favor de utilizar botón continuo!") 
+                return  
             self.app.change_app_state(button)
             self.app.output_log.append("Request start...")
             self.app.log("auto", "info", "Request start...")
@@ -80,6 +82,7 @@ class Control(CTk):
             self.button_stop.configure(state=NORMAL)  # type: ignore
             self.button_continuous.configure(state=DISABLED)  # type: ignore
             Thread(target=self.app.smart.start_auto_loop).start()
+                
         elif button == "pause":
             self.app.change_app_state(button)
             self.app.output_log.append("Request pause...")
@@ -96,7 +99,11 @@ class Control(CTk):
             self.button_pause.configure(state=NORMAL)  # type: ignore
             self.button_stop.configure(state=DISABLED)  # type: ignore
             self.button_continuous.configure(state=NORMAL)  # type: ignore
-        if button == "continuos":
+        elif button == "continuos":
+            if self.app.mode == 'mA':
+                self.app.output_log.append("Error: Usar botón start")
+                self.app.log("auto", "error", "Favor de utilizar botón start!") 
+                return  
             self.app.change_app_state(button)
             self.app.output_log.append("Request loop start...")
             self.app.log("auto", "info", "Request loop start...")
@@ -104,7 +111,11 @@ class Control(CTk):
             self.button_pause.configure(state=NORMAL)  # type: ignore
             self.button_stop.configure(state=NORMAL)  # type: ignore
             self.button_continuous.configure(state=DISABLED)  # type: ignore
-            Thread(target=self.app.smart.start_auto_loop).start()            
+            Thread(target=self.app.smart.start_auto_loop).start()  
+
+        elif button == 'expand':
+            self.app.open_expanded()
+
 
     def show(self):
         self.frame_control.grid(row=2, column=2, padx=10, pady=(10, 20), sticky="NSEW")  # type: ignore

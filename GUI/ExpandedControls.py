@@ -1,78 +1,122 @@
-from customtkinter import CTk, CTkToplevel, CTkLabel, CTkFrame, CTkButton, StringVar, CTkCheckBox, LEFT, END, TOP, BOTH  # type: ignore
+from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkToplevel, DISABLED, NORMAL  # type: ignore
 from GUI.constants import *
-from threading import Thread
+from typing import Any
 
 
 class ExpandedControls(CTkToplevel):
-    def __init__(self, *args):  # type: ignore
+    def __init__(self, *args: Any):  # type: ignore
         from GUI.GUI import GUI
 
         super().__init__(*args)  # type: ignore
-        self.gui: GUI = args[0]
+        self.app: GUI = args[0]
         self.all: list[all_calibrations] = ALL_CALIBRATIONS  # type: ignore
         self.attributes("-topmost", True)  # type: ignore
-        self.geometry("300x200")
-        text = self.gui.font_text  # type: ignore
-        title = self.gui.font_title  # type: ignore
-        self.label = CTkLabel(self, text="Control panel", font=title)
-        self.label.pack(pady=5)  # type: ignore
+        self.geometry("360x105")
+        self.resizable(False, False)  # type: ignore
+        title = self.app.font_title  # type: ignore
 
-        self.frame_buttons = CTkFrame(self, fg_color=BG_COLOR_1)
-        f = self.frame_buttons
-        self.button_auto_start = CTkButton(
+        self.frame_control = CTkFrame(self, fg_color=BG_COLOR_1)
+        f = self.frame_control
+
+        self.button_start = CTkButton(
             f,
-            font=text,
+            font=title,
             text="\u23F5",
             fg_color=OK_COLOR,
             hover_color=OK_COLOR_HOVER,
             command=lambda: self.action("start"),
         )
-        self.button_auto_pause = CTkButton(
+        self.button_pause = CTkButton(
             f,
             text_color="black",
-            font=text,
+            font=title,
             text="\u23F8",
             fg_color=WARNING_COLOR,
             hover_color=WARNING_COLOR_HOVER,
             command=lambda: self.action("pause"),
         )
-        self.button_auto_stop = CTkButton(
+        self.button_stop = CTkButton(
             f,
-            font=text,
+            font=title,
             text="\u23F9",
             fg_color=ERR_COLOR,
             hover_color=ERR_COLOR_HOVER,
             command=lambda: self.action("stop"),
         )
-        self.button_loop = CTkButton(
+        self.button_expand = CTkButton(
             f,
-            font=text,
-            text="expand",
+            font=title,
+            text="Expand",
             fg_color=INFO_COLOR,
             hover_color=INFO_COLOR_HOVER,
             command=lambda: self.action("expand"),
         )
+        self.button_continuous = CTkButton(
+            f,
+            font=title,
+            text="\u21AC",
+            command=lambda: self.action("continuos"),
+        )
+        self.label_output = CTkLabel(f, text="", font=title, text_color=WARNING_COLOR)
 
-    def action(self, button: auto_option | str) -> None:
+        self.frame_control.grid_columnconfigure(0, weight=1)
+        self.frame_control.grid_columnconfigure(1, weight=1)
+        self.frame_control.grid_columnconfigure(2, weight=1)
+        self.frame_control.grid_columnconfigure(3, weight=1)
+
+        self.frame_control.rowconfigure(0, weight=1)
+        self.frame_control.rowconfigure(1, weight=1)
+
+        self.button_start.grid(row=0, column=0, pady=(10, 5), padx=(10, 5), sticky="NSEW")  # type: ignore
+        self.button_pause.grid(row=0, column=1, pady=(10, 5), padx=5, sticky="NSEW")  # type: ignore
+        self.button_stop.grid(row=0, column=2, pady=(10, 5), padx=(5), sticky="NSEW")  # type: ignore
+        self.button_continuous.grid(row=0, column=3, pady=(10, 5), padx=(5, 10), sticky="NSEW")  # type: ignore
+        self.button_stop.configure(state=DISABLED)  # type: ignore
+        self.label_output.grid(row=1, column=0, columnspan=4, pady=(5, 10), padx=(10), sticky="NSEW")  # type: ignore
+        self.show()
+        self.update_buttons(self.app.app_state)
+
+    def action(self, button: control_option) -> None:
+        self.label_output.configure(text="")  # type: ignore
         if button == "start":
-            self.gui.change_app_state(button)
-            self.gui.log("auto", "info", "Request auto start...")
-            self.button_auto_start.configure(state=DISABLED)  # type: ignore
-            self.button_auto_pause.configure(state=NORMAL)  # type: ignore
-            self.button_auto_stop.configure(state=NORMAL)  # type: ignore
-            self.button_auto_continuous.configure(state=DISABLED)  # type: ignore
-            Thread(target=self.gui.smart.start_auto_loop).start()
+            if self.app.mode == "auto":
+                self.label_output.configure(text="Error: Usar botón continuo")  # type: ignore
+                self.app.output_log.append("Error: Usar botón continuo")
+                return
+
+        elif button == "continuos":
+            if self.app.mode == "mA":
+                self.label_output.configure(text="Error: Usar botón start")  # type: ignore
+                self.app.output_log.append("Error: Usar botón start")
+                return
+            
+        self.update_buttons(button)
+        self.app.control.action(button)
+
+    def update_buttons(self, button: control_option):
+        if button == "start":
+            self.button_start.configure(state=DISABLED)  # type: ignore
+            self.button_pause.configure(state=NORMAL)  # type: ignore
+            self.button_stop.configure(state=NORMAL)  # type: ignore
+            self.button_continuous.configure(state=DISABLED)  # type: ignore
         elif button == "pause":
-            self.gui.change_app_state(button)
-            self.gui.log("auto", "info", "Request pause...")
-            self.button_auto_start.configure(state=NORMAL)  # type: ignore
-            self.button_auto_pause.configure(state=DISABLED)  # type: ignore
-            self.button_auto_stop.configure(state=NORMAL)  # type: ignore
-            self.button_auto_continuous.configure(state=DISABLED)  # type: ignore
+            self.button_start.configure(state=NORMAL)  # type: ignore
+            self.button_pause.configure(state=DISABLED)  # type: ignore
+            self.button_stop.configure(state=NORMAL)  # type: ignore
+            self.button_continuous.configure(state=DISABLED)  # type: ignore
         elif button == "stop":
-            self.gui.change_app_state(button)
-            self.gui.log("auto", "info", "Request stop...")
-            self.button_auto_start.configure(state=NORMAL)  # type: ignore
-            self.button_auto_pause.configure(state=NORMAL)  # type: ignore
-            self.button_auto_stop.configure(state=NORMAL)  # type: ignore
-            self.button_auto_continuous.configure(state=NORMAL)  # type: ignore
+            self.button_start.configure(state=NORMAL)  # type: ignore
+            self.button_pause.configure(state=NORMAL)  # type: ignore
+            self.button_stop.configure(state=DISABLED)  # type: ignore
+            self.button_continuous.configure(state=NORMAL)  # type: ignore
+        elif button == "continuos":
+            self.button_start.configure(state=DISABLED)  # type: ignore
+            self.button_pause.configure(state=NORMAL)  # type: ignore
+            self.button_stop.configure(state=NORMAL)  # type: ignore
+            self.button_continuous.configure(state=DISABLED)  # type: ignore
+
+    def show(self):
+        self.frame_control.pack(padx=10, pady=10)  # type: ignore
+
+    def hide(self):
+        self.frame_control.pack_forget()

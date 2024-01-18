@@ -13,13 +13,13 @@ class GUI(CTk):
     font_title: tuple[str, int, str] = ("Consolas", 18, "bold")
     font_text: tuple[str, int] = ("Consolas", 16)
     font_output: tuple[str, int] = ("Consolas", 13)
-    from GUI.constants import tabs_list, class_option, level_option, auto_option
+    from GUI.constants import tabs_list, class_option, level_option, control_option
 
     def __init__(self) -> None:
         # use import inside constructor to avoid circular import
         from GUI.Serial import Serial
         from SerialCom.SerialCom import SerialCom
-        from GUI.constants import auto_option
+        from GUI.constants import control_option
         from GUI.Auxiliary import Auxiliary
         from GUI.Vision import Vision
         from GUI.Control import Control
@@ -33,8 +33,6 @@ class GUI(CTk):
         from Interaction.MU0 import MU0
 
         super().__init__()  # type: ignore
-        self.toplevel_window: CTkToplevel
-        self.app_state: auto_option = "stop"
         self.attributes("-topmost", True)  # type: ignore
         self.geometry("960x420")  # type: ignore
         self.title("FPD Calibration bot")  # type: ignore
@@ -43,17 +41,19 @@ class GUI(CTk):
         self.lower()
         self.logger = Logger()
 
-
-        #states
-        self.duration: dur_option = 'short'
-        self.mode: mode_option = 'FPD'
-        self.click_ok: ok_option = 'on'
-        self.autoselect: ok_option = 'off'
-        self.current_calib = 'None'
+        # states
+        self.app_state: control_option = "stop"
+        self.duration: dur_option = "short"
+        self.mode: mode_option = "FPD"
+        self.click_ok: ok_option = "on"
+        self.autoselect: ok_option = "off"
+        self.current_calib = "None"
 
         # functions
         self.selected_cal: list[all_calibrations] = []
         self.com = SerialCom(self)
+
+        # GUI
 
         self.grid_columnconfigure(0, weight=1, minsize=250)
         self.grid_columnconfigure(1, weight=1, minsize=200)
@@ -62,8 +62,9 @@ class GUI(CTk):
         self.rowconfigure(0, weight=1, minsize=135)
         self.rowconfigure(1, weight=1, minsize=135)
         self.rowconfigure(2, weight=1, minsize=75)
-
-        # GUI
+        # GUI COMPONENTS
+        self.toplevel_window: CTkToplevel
+        self.expanded_window: CTkToplevel
         self.vision = Vision(self)
         self.output = Output(self)
         self.serial = Serial(self)  # type: ignore
@@ -91,6 +92,7 @@ class GUI(CTk):
 
     def open_toplevel(self):
         from GUI.TopLevelWindow import ToplevelWindow
+
         try:
             if not self.toplevel_window.winfo_exists():
                 self.toplevel_window = ToplevelWindow(self)
@@ -102,7 +104,21 @@ class GUI(CTk):
         else:
             self.toplevel_window.focus()
 
-    def change_app_state(self, state: auto_option) -> None:
+    def open_expanded(self):
+        from GUI.ExpandedControls import ExpandedControls
+
+        try:
+            if not self.expanded_window.winfo_exists():
+                self.expanded_window = ExpandedControls(self)
+                self.expanded_window.focus_force()
+        except AttributeError:
+            self.expanded_window = ExpandedControls(self)
+            self.expanded_window.focus_force()
+            self.update()
+        else:
+            self.expanded_window.focus()
+
+    def change_app_state(self, state: control_option) -> None:
         self.app_state = state
 
     def log(self, _class: class_option, level: level_option, note: str) -> None:
