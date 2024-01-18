@@ -88,15 +88,20 @@ class Output(CTk):
     def loop_success(self, count: int, secs: int):
         time = self.convert_seconds(secs)
         self.output_a.configure(text=f"Exposure count: {count}")  # type: ignore
-        self.output_b.configure(text=f"total time waited: {time}")  # type: ignore        
+        self.output_b.configure(text=f"total time waited: {time}")  # type: ignore
 
+    # ---------------------------------------- ERRORS --------------------------------------------
     def calibration_aborted(self):
         self.output_a.configure(text="Calibration aborted!")  # type: ignore
-        self.output_b.configure(text=f"-----------------")  # type: ignore
+        self.output_b.configure(text=f"----------------------------------")  # type: ignore
+
+    def icon_not_found(self):
+        self.output_a.configure(text="Artificial vision error!")  # type: ignore
+        self.output_b.configure(text=f"----------------------------------")  # type: ignore
 
     def exposure_aborted(self):
         self.output_a.configure(text="Exposure aborted!")  # type: ignore
-        self.output_b.configure(text=f"-----------------")  # type: ignore
+        self.output_b.configure(text=f"----------------------------------")  # type: ignore
 
     def exposure_abnormal(self):
         self.output_a.configure(text="Exposure abnormal!")  # type: ignore

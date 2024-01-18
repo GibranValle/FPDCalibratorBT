@@ -25,6 +25,7 @@ class SerialCom:
             return
         self.isListening = True
         self.offline = False
+
         self.app.log("serial", "info", "Serial connection established")
         while self.isListening:
             if not self.arduino.isOpen():  # type: ignore
@@ -52,12 +53,9 @@ class SerialCom:
         """
         if self.offline:
             self.app.log("serial", "warning", "Working in offline mode")
-            raise ConnectionError('Offline mode')
+            return True
 
-        if not self.isListening:
-            self.app.log("serial", "warning", "Working in offline mode")
-            raise ConnectionError('Offline mode')
-
+        print("message to send", message)
         res = self.write2Read(message)
         if res == message:
             return True
@@ -66,22 +64,21 @@ class SerialCom:
 
     def start(self, variant: exposure_option):
         message = "S" if variant == "short" else "L"
+        print(message)
         try:
-            self.communicate(message)
-            return True
+            if self.communicate(message):
+                return True
+            return False
         except ConnectionAbortedError:
             raise ConnectionAbortedError("message was not responded")
-        except ConnectionError:
-            return True
 
     def end(self):
         try:
-            self.communicate("X")
-            return True
+            if self.communicate("X"):
+                return True
+            return False
         except ConnectionAbortedError:
             raise ConnectionAbortedError("message was not responded")
-        except ConnectionError:
-            return True
 
     def endListening(self):
         try:

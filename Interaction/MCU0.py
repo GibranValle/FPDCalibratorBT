@@ -120,39 +120,30 @@ class MCU0(Interaction):
         print("Cal tab not visible")
         return False
 
-    def click_calibration_button(self, button: mcu | mcu_opt) -> None:
+    def click_calibration_button(self, button: mcu | mcu_opt) -> bool | None:
         online = not self.app.com.is_offline()
-        try:
-            if self._open_MUTL_MCU():
-                self.app.output.clicked("MUTL")
-            else:
-                self.app.output.restart("MUTL")
-                if online:
+        if online:
+            try:
+                if self._open_MUTL_MCU():
+                    self.app.output.clicked("MUTL")
+                if button in MCU and self._click_cal_tab():
+                    self.app.output.clicked("Cal tab")
+                elif button in MCU_OPT and self._click_cal_opt_tab():
+                    self.app.output.clicked("Cal Opt tab")
+                else:
+                    self.app.output.restart("MUTL")
                     raise RuntimeError("MUTL not installed")
-        except RuntimeError:
-            return
-
-        try:
-            if button in MCU and self._click_cal_tab():
-                self.app.output.clicked("Cal tab")
-            elif button in MCU_OPT and self._click_cal_opt_tab():
-                self.app.output.clicked("Cal Opt tab")
-            else:
-                self.app.output.restart("MUTL")
-                if online:
-                    raise RuntimeError("CAL OPT TAB NOT VISIBLE")
-        except RuntimeError:
-            return
+            except RuntimeError:
+                return False
 
         try:
             x, y = self.cv.get_icon_coords(button)
             if x > 0 and y > 0:
                 self._click_point(x, y)
                 self.app.output.clicked(f"{button}")
-                return
+                return True
 
             self.app.output.restart("MUTL")
-            if online:
-                raise RuntimeError(f"{button} button not visible")
+            raise RuntimeError(f"{button} button not visible")
         except RuntimeError:
-            return
+            return False
