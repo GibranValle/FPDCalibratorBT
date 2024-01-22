@@ -77,19 +77,7 @@ class ExpandedControls(CTkToplevel):
         self.update_buttons(self.app.app_state)
 
     def action(self, button: control_option) -> None:
-        self.label_output.configure(text="")  # type: ignore
-        if button == "start":
-            if self.app.mode == "auto":
-                self.label_output.configure(text="Error: Usar botón continuo")  # type: ignore
-                self.app.output_log.append("Error: Usar botón continuo")
-                return
-
-        elif button == "continuos":
-            if self.app.mode == "mA":
-                self.label_output.configure(text="Error: Usar botón start")  # type: ignore
-                self.app.output_log.append("Error: Usar botón start")
-                return
-            
+        self.label_output.configure(text="")  # type: ignore           
         self.update_buttons(button)
         self.app.control.action(button)
 
@@ -114,6 +102,13 @@ class ExpandedControls(CTkToplevel):
             self.button_pause.configure(state=NORMAL)  # type: ignore
             self.button_stop.configure(state=NORMAL)  # type: ignore
             self.button_continuous.configure(state=DISABLED)  # type: ignore
+
+    def update_message(self, text: str):
+        if "error" in text.lower():
+            self.label_output.configure(text_color=WARNING_COLOR)  # type: ignore            
+        else:
+            self.label_output.configure(text_color="white")  # type: ignore            
+        self.label_output.configure(text=text)  # type: ignore
 
     def show(self):
         self.frame_control.pack(padx=10, pady=10)  # type: ignore

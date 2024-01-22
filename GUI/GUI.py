@@ -26,7 +26,8 @@ class GUI(CTk):
         from GUI.Log import Log
         from GUI.Output import Output
         from Logger.Logger import Logger
-        from Smart.SmartExposure import SmartExposure
+        from Exposure.SmartExposure import SmartExposure
+        from Exposure.ManualExposure import ManualExposure
         from GUI.Mode import Mode
         from Interaction.AWSGen import AWSGen
         from Interaction.MCU0 import MCU0
@@ -51,10 +52,9 @@ class GUI(CTk):
 
         # functions
         self.selected_cal: list[all_calibrations] = []
-        self.com = SerialCom(self)
+        self.com = SerialCom(self)        
 
         # GUI
-
         self.grid_columnconfigure(0, weight=1, minsize=250)
         self.grid_columnconfigure(1, weight=1, minsize=200)
         self.grid_columnconfigure(2, weight=1, minsize=100)
@@ -77,6 +77,7 @@ class GUI(CTk):
         self.mu_interactor = MU0(self)
         self.mcu_interactor = MCU0(self)
         self.smart = SmartExposure(self)
+        self.manual = ManualExposure(self)
         self.log("gui", "info", "Gui initialization completed")
 
     def on_closing(self, event: int = 0):
