@@ -1,4 +1,4 @@
-from customtkinter import CTk, CTkFrame, CTkButton  # type: ignore
+from customtkinter import CTk, CTkFrame, CTkButton, DISABLED  # type: ignore
 from GUI.constants import *
 
 
@@ -35,6 +35,8 @@ class Auxiliary(CTk):
             font=output,
             text="Select Calibrations",
             command=lambda: self.action("select"),
+            state=DISABLED,
+            text_color=DISABLED_COLOR,
         )
         self.calib_button = CTkButton(
             f,

@@ -51,7 +51,7 @@ exposure_option = Literal["short", "long"]
 class_option = Literal[
     "manual", "semi", "auto", "serial", "gui", "smart", "mu0", "mcu0", "control"
 ]
-level_option = Literal["info", "error", "warning"]
+level_option = Literal["info", "error", "warning", "success"]
 control_option = Literal["start", "pause", "stop", "continuos", "expand"]
 aux_option = Literal["enable", "hlv", "mag", "select", "calib", "fpd"]
 dur_option = Literal["short", "long"]

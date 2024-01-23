@@ -17,15 +17,17 @@ class ComputerVision:
         self, button: status_gen | status_mcu | status_mu
     ) -> tuple[int, int]:
         dir: keys = "status_gen"
+        confidence = 0.95
+
         if button in STATUS_GEN:
             dir: keys = "status_gen"
         elif button in STATUS_MCU:
             dir: keys = "status_mcu"
+            confidence = 0.9
         elif button in STATUS_MU:
             dir: keys = "status_mu"
         try:
             path: str = self.image_repository[dir][button]
-            confidence = 0.95
             x, y = locateCenterOnScreen(path, confidence=confidence)  # type: ignore
             return x, y  # type: ignore
         except TypeError:

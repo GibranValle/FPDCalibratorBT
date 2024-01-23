@@ -1,4 +1,4 @@
-from customtkinter import CTk, CTkToplevel, set_appearance_mode, set_default_color_theme  # type: ignore
+from customtkinter import CTk, CTkToplevel, set_appearance_mode, set_default_color_theme, DISABLED, NORMAL  # type: ignore
 import sys
 from GUI.constants import *
 from os import getcwd
@@ -48,11 +48,11 @@ class GUI(CTk):
         self.mode: mode_option = "FPD"
         self.click_ok: ok_option = "on"
         self.autoselect: ok_option = "off"
+        self.selected_cal: list[all_calibrations] = []
         self.current_calib = "None"
 
         # functions
-        self.selected_cal: list[all_calibrations] = []
-        self.com = SerialCom(self)        
+        self.com = SerialCom(self)
 
         # GUI
         self.grid_columnconfigure(0, weight=1, minsize=250)
@@ -90,6 +90,15 @@ class GUI(CTk):
             print("destroying")
             self.destroy()
             sys.exit()
+
+    def change_current_calib(self, calib: str):
+        self.vision.current_calib.configure(text=calib)  # type: ignore
+
+    def toggle_select_button(self):
+        if self.mode != "auto":
+            self.auxiliary.select_calib.configure(text_color=DISABLED_COLOR, state=DISABLED)  # type: ignore
+        else:
+            self.auxiliary.select_calib.configure(text_color="white", state=NORMAL)  # type: ignore
 
     def open_toplevel(self):
         from GUI.TopLevelWindow import ToplevelWindow

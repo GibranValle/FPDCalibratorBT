@@ -89,31 +89,33 @@ class Mode(CTk):
         elif option == "long":
             self.app.duration = "long"
             self.app.mode = "manual"
-            self.app.autoselect = "off" 
+            self.app.autoselect = "off"
         elif option == "mA":
             self.app.duration = "long"
             self.app.mode = "mA"
-            self.app.autoselect = "off" 
+            self.app.autoselect = "off"
         elif option == "FPD":
             self.app.duration = "short"
             self.app.mode = "FPD"
-            self.app.autoselect = "off" 
+            self.app.autoselect = "off"
         elif option == "ok":
             if self.app.click_ok == "on":
                 self.app.click_ok = "off"
                 self.button_ok.configure(text_color=DISABLED_COLOR)  # type: ignore
             elif self.app.click_ok == "off":
                 self.app.click_ok = "on"
-                self.button_ok.configure(text_color='white')  # type: ignore
+                self.button_ok.configure(text_color="white")  # type: ignore
         elif option == "autostart":
             if self.app.autoselect == "on":
                 self.app.mode = "FPD"
                 self.app.autoselect = "off"
                 self.button_auto_select.configure(text_color=DISABLED_COLOR)  # type: ignore
+                self.app.toggle_select_button()
             elif self.app.autoselect == "off":
                 self.app.mode = "auto"
                 self.app.autoselect = "on"
-                self.button_auto_select.configure(text_color='white')  # type: ignore
+                self.button_auto_select.configure(text_color="white")  # type: ignore
+                self.app.toggle_select_button()
         self.update()
         self.app.vision.update()
 
@@ -140,7 +142,7 @@ class Mode(CTk):
             self.button_short.configure(text_color=DISABLED_COLOR)  # type: ignore
             self.button_long.configure(text_color=DISABLED_COLOR)  # type: ignore
             self.button_mA.configure(text_color=DISABLED_COLOR)  # type: ignore
-            self.button_FPD.configure(text_color=DISABLED_COLOR)  # type: ignore            
+            self.button_FPD.configure(text_color=DISABLED_COLOR)  # type: ignore
 
     def show(self):
         self.frame_mode.grid(row=1, column=0, columnspan=3, sticky="NSEW", padx=(20, 10), pady=10)  # type: ignore

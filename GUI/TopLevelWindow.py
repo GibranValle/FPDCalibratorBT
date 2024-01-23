@@ -52,6 +52,9 @@ class ToplevelWindow(CTkToplevel):
 
     def basic(self):
         self.gui.selected_cal = BASIC_CALIBRATIONS
+        self.gui.current_calib = self.gui.selected_cal[0]
+        self.gui.change_current_calib(self.gui.selected_cal[0])
+
         for option in self.all:
             name = "var" + option.replace(" ", "_")
             if option in self.gui.selected_cal:
@@ -61,6 +64,9 @@ class ToplevelWindow(CTkToplevel):
 
     def tomo(self):
         self.gui.selected_cal = TOMO_CALIBRATIONS
+        self.gui.current_calib = self.gui.selected_cal[0]
+        self.gui.change_current_calib(self.gui.selected_cal[0])
+
         for option in self.all:
             name = "var" + option.replace(" ", "_")
             if option in self.gui.selected_cal:
@@ -70,6 +76,9 @@ class ToplevelWindow(CTkToplevel):
 
     def full(self):
         self.gui.selected_cal = FULL_CALIBRATIONS
+        self.gui.current_calib = self.gui.selected_cal[0]
+        self.gui.change_current_calib(self.gui.selected_cal[0])
+
         for option in self.all:
             name = "var" + option.replace(" ", "_")
             if option in self.gui.selected_cal:
@@ -86,3 +95,9 @@ class ToplevelWindow(CTkToplevel):
             elif globals()[name].get() == "off":
                 if option in self.gui.selected_cal:
                     self.gui.selected_cal.remove(option)
+        try:
+            self.gui.change_current_calib(self.gui.selected_cal[0])
+            self.gui.current_calib = self.gui.selected_cal[0]
+        except IndexError:
+            self.gui.change_current_calib("None")
+            self.gui.current_calib = "None"

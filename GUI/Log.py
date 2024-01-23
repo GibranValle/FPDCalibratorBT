@@ -23,10 +23,10 @@ class Log(CTk):
     def append(self, text: str) -> None:
         try:
             print(self.app.expanded_window.winfo_exists())
+            if self.app.expanded_window.winfo_exists():
+                self.app.expanded_window.update_message(text)  # type: ignore
         except:
             pass
-        if self.app.expanded_window.winfo_exists():
-            self.app.expanded_window.update_message(text)  # type: ignore
         if "error" in text.lower():
             self.log_label.configure(text_color=WARNING_COLOR, text="LOG ERROR!")  # type: ignore
         else:
