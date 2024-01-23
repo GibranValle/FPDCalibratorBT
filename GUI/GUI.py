@@ -24,7 +24,6 @@ class GUI(CTk):
         from GUI.Vision import Vision
         from GUI.Control import Control
         from GUI.Log import Log
-        from GUI.Output import Output
         from Logger.Logger import Logger
         from Exposure.SmartExposure import SmartExposure
         from Exposure.ManualExposure import ManualExposure
@@ -66,7 +65,6 @@ class GUI(CTk):
         self.toplevel_window: CTkToplevel
         self.expanded_window: CTkToplevel
         self.vision = Vision(self)
-        self.output = Output(self)
         self.serial = Serial(self)  # type: ignore
         self.auxiliary = Auxiliary(self)
         self.modes = Mode(self)

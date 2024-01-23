@@ -32,6 +32,7 @@ class Log(CTk):
         else:
             self.log_label.configure(text_color="white", text="LOG")  # type: ignore
         self.textbox.insert(END, f"{text}\n")  # type: ignore
+        self.textbox.see(END)  # type: ignore
 
     def show(self):
         self.frame_log.grid(row=1, column=3, rowspan=2, sticky="NSEW", padx=(10, 20), pady=(10, 20))  # type: ignore

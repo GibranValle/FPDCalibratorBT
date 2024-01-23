@@ -42,7 +42,8 @@ class ManualExposure:
             self.app.output_log.append("Accepted start of exposure")
         except ConnectionAbortedError:
             return
-
+        self.app.change_app_state("stop")
+        self.app.control.action("stop")
         self.app.output_log.append("Exposure completed!\n-----------------------")
 
     def start_long_exposure(self):
@@ -61,23 +62,19 @@ class ManualExposure:
             self.generic.underExpMessage(i, True)
 
         try:
-            self.app.output.change_a("Requesting end of exposure")
             sleep(0.3)
             self.app.com.end()
-            self.app.output.change_a("Accepted end of exposure")
         except ConnectionAbortedError:
             return
-
+        self.app.change_app_state("stop")
+        self.app.control.action("stop")
         self.app.output_log.append("Exposure completed!\n-----------------------")
 
     def end_exposure(self):
         sleep(1)
         try:
-            self.app.output.change_a("Requesting end of exposure")
             sleep(0.3)
             self.app.com.end()
-            self.app.output.change_a("Accepted end of exposure")
         except ConnectionAbortedError:
             return
-
         self.app.output_log.append("Error: Exposure canceled!\n-----------------------")
