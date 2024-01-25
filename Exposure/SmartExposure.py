@@ -29,8 +29,6 @@ class SmartExposure:
         except RuntimeError:
             self.generic.abortMessage()
             return total
-        self.app.change_app_state("stop")
-        self.app.control.action("stop")
         return total
 
     def start_timer(self) -> int:
@@ -41,7 +39,6 @@ class SmartExposure:
         return total
 
     def start_smart_exposure(self, timer: bool = False) -> int:
-        # for semi mode
         total = 0
         try:
             if timer and total == 0:
@@ -50,7 +47,8 @@ class SmartExposure:
 
             total += self.generic.wait_standby()
             self.app.vision.status_label.configure(text="Status: Standby")  # type: ignore
-            self.app.com.start(variant="short")
+            variant = "long" if timer else "short"
+            self.app.com.start(variant=variant)
             total += self.generic.wait_exposure_start()
             self.app.vision.status_label.configure(text="Status: Under exposure")  # type: ignore
             total += self.generic.wait_exposure_end()
@@ -61,8 +59,6 @@ class SmartExposure:
             self.app.vision.status_label.configure(text="Status: Blocked")  # type: ignore
             return total
         self.generic.exposureMessage(total)
-        self.app.change_app_state("stop")
-        self.app.control.action("stop")
         return total
 
     def start_smart_loop(self) -> int:
@@ -96,7 +92,10 @@ class SmartExposure:
         total = 0
         try:
             for calibration in self.app.selected_cal:
-                text = f"Stabilization..."
+                if self.app.app_state == "stop":
+                    raise ConnectionAbortedError
+
+                text = f"Stabilization for {calibration} calib"
                 self.app.output_log.append(text)
                 self.app.log("control", "info", text)
                 self.app.current_calib = calibration
@@ -106,18 +105,9 @@ class SmartExposure:
                 total += 2
 
                 if not self.app.mcu_interactor.click_calibration_button(calibration):
-                    text = f"Error: {calibration} button not found"
-                    self.app.output_log.append(text)
-                    self.app.log("control", "info", text)
                     raise AttributeError
-                text = f"{calibration} button pushed"
-                self.app.output_log.append(text)
-                self.app.log("control", "info", text)
 
                 if not self.app.aws_interactor.enable_FPD_calib():
-                    text = f"Error: FPD calibration not enabled"
-                    self.app.output_log.append(text)
-                    self.app.log("control", "info", text)
                     raise AttributeError
 
                 text = f"FPD calibration enabled"
@@ -129,6 +119,10 @@ class SmartExposure:
 
                 else:
                     total = self.start_smart_exposure()
+
+        except ConnectionAbortedError:
+            self.generic.abortMessage()
+            self.app.control.action("stop")
 
         except AttributeError:
             self.app.control.action("stop")

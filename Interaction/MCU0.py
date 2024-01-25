@@ -120,30 +120,53 @@ class MCU0(Interaction):
         print("Cal tab not visible")
         return False
 
-    def click_calibration_button(self, button: mcu | mcu_opt) -> bool | None:
+    def click_calibration_button(self, button: mcu | mcu_opt) -> bool:
         online = not self.app.com.is_offline()
-        if online:
-            try:
-                if self._open_MUTL_MCU():
-                    self.app.output.clicked("MUTL")
-                if button in MCU and self._click_cal_tab():
-                    self.app.output.clicked("Cal tab")
-                elif button in MCU_OPT and self._click_cal_opt_tab():
-                    self.app.output.clicked("Cal Opt tab")
+        try:
+            if self._open_MUTL_MCU():
+                text = "MUTL Opened"
+                self.app.output_log.append(text)
+                self.app.log("mcu0", "success", text)
+            else:
+                if online:
+                    text = "Error: MUTL could not be opened, Retry"
+                    self.app.output_log.append(text)
+                    self.app.log("mcu0", "error", text)
+                    raise RuntimeError("Error: CALIBRATION TAB NOT VISIBLE")
+        except RuntimeError:
+            return False
+
+        try:
+            if button in MCU:
+                if self._click_cal_tab():
+                    text = "Calibration tab clicked"
+                    self.app.output_log.append(text)
+                    self.app.log("mcu0", "error", text)
                 else:
-                    self.app.output.restart("MUTL")
-                    raise RuntimeError("MUTL not installed")
-            except RuntimeError:
-                return False
+                    raise RuntimeError("Error: CALIBRATION TAB NOT VISIBLE")
+
+            elif button in MCU_OPT:
+                if self._click_cal_opt_tab():
+                    text = "Calibration Opt tab clicked"
+                    self.app.output_log.append(text)
+                    self.app.log("mcu0", "error", text)
+                else:
+                    raise RuntimeError("Error: CALIBRATION TAB NOT VISIBLE")
+        except RuntimeError:
+            return False
 
         try:
             x, y = self.cv.get_icon_coords(button)
             if x > 0 and y > 0:
                 self._click_point(x, y)
-                self.app.output.clicked(f"{button}")
+                text = f"{button} button clicked"
+                self.app.output_log.append(text)
+                self.app.log("mcu0", "success", text)
                 return True
 
-            self.app.output.restart("MUTL")
-            raise RuntimeError(f"{button} button not visible")
+            text = f"Error: {button} button not clicked"
+            self.app.output_log.append(text)
+            self.app.log("mcu0", "error", text)
+            raise RuntimeError("Error: CALIBRATION TAB NOT VISIBLE")
         except RuntimeError:
             return False

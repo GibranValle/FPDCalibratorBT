@@ -68,7 +68,7 @@ class Auxiliary(CTk):
 
     def action(self, button: aux_option) -> None:
         if button == "enable":
-            self.app.mu_interactor.enable_ment()
+            self.app.mu_interactor.enable_ment_mode()
 
         elif button == "hlv":
             self.app.mu_interactor.toggle_HVL()
