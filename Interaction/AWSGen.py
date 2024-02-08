@@ -1,5 +1,6 @@
 from Interaction.Interaction import Interaction
 from ComputerVision.cv_types import aws, gen
+from time import sleep
 
 
 class AWSGen(Interaction):
@@ -11,7 +12,12 @@ class AWSGen(Interaction):
     def _click_icon_aws(self, button: aws) -> bool:
         x, y = self.cv.get_icon_coords(button)
         if x > 0 and y > 0:
-            self._click_point(x, y, True)
+            if button == "calib":
+                self._click_point(x, y, False)
+                sleep(0.3)
+                self._click_point(x, y, False)
+            else:
+                self._click_point(x, y, True)
             return True
         return False
 
@@ -32,7 +38,6 @@ class AWSGen(Interaction):
 
     def click_calib_button(self) -> bool:
         validation = self._click_icon_aws("calib")
-        validation = validation and self._click_icon_aws("calib")
         if not validation:
             print("AWS calib button not pushed")
             self.app.output_log.append("AWS calib button not pushed")

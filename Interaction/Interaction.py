@@ -31,7 +31,6 @@ class Interaction:
             a, b = position()
         sleep(0.5)
         click(x, y)
-        sleep(0.4)
         if return2origin:
             moveTo(a, b)
 

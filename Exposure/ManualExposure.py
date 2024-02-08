@@ -4,6 +4,7 @@ from Exposure.constants import *
 from ComputerVision.ComputerVision import ComputerVision
 from ComputerVision.cv_types import status_mcu
 from Exposure.Generic import Generic
+from GUI.constants import *
 
 
 class ManualExposure:
@@ -20,54 +21,39 @@ class ManualExposure:
         pass
 
     # -------------------- MANUAL OPERATIONS ----------------------------------------
-    def start_short_exposure(self):
+    def start_exposure(self, variant: exposure_option = "short"):
         try:
-            self.app.output_log.append("Requesting start of exposure")
-            sleep(0.3)
-            self.app.com.start(variant="short")
-            self.app.output_log.append("Accepted start of exposure")
+            if variant == "short":
+                self.app.output_log.append("Requesting start of exposure")
+                self.app.com.start_short()
+                self.app.output_log.append("Accepted start of exposure")
+            elif variant == "long":
+                self.app.output_log.append("Requesting start of LONG exposure")
+                self.app.com.start_long()
+                self.app.output_log.append("Accepted start of LONG exposure")
         except ConnectionAbortedError:
             return
 
-        for i in range(SHORT_TIME_EXPOSURE + 1):
-            if self.app.app_state == "stop":
-                return
-            sleep(1)
-            self.generic.underExpMessage(i)
-
         try:
-            self.app.output_log.append("Requesting end of exposure")
-            sleep(0.3)
+            for i in range(LONG_TIME_EXPOSURE + 1):
+                if self.app.app_state == "stop":
+                    raise StopIteration
+                sleep(1)
+                self.generic.underExpMessage(i, variant == "long")
+            try:
+                sleep(0.3)
+                self.app.com.end()
+            except ConnectionAbortedError:
+                return
+        except StopIteration:
+            self.app.change_app_state("stop")
+            self.app.control.action("stop")
             self.app.com.end()
-            self.app.output_log.append("Accepted start of exposure")
-        except ConnectionAbortedError:
+            self.app.output_log.append("Exposure Aborted!\n-----------------------")
             return
         self.app.change_app_state("stop")
         self.app.control.action("stop")
-        self.app.output_log.append("Exposure completed!\n-----------------------")
-
-    def start_long_exposure(self):
-        try:
-            self.app.output_log.append("Requesting start of LONG exposure")
-            sleep(0.3)
-            self.app.com.start(variant="long")
-            self.app.output_log.append("Accepted start of LONG exposure")
-        except ConnectionAbortedError:
-            return
-
-        for i in range(LONG_TIME_EXPOSURE + 1):
-            if self.app.app_state == "stop":
-                return
-            sleep(1)
-            self.generic.underExpMessage(i, True)
-
-        try:
-            sleep(0.3)
-            self.app.com.end()
-        except ConnectionAbortedError:
-            return
-        self.app.change_app_state("stop")
-        self.app.control.action("stop")
+        self.app.com.end()
         self.app.output_log.append("Exposure completed!\n-----------------------")
 
     def end_exposure(self):

@@ -65,6 +65,7 @@ class Control(CTk):
         self.button_stop.grid(row=0, column=2, pady=(10, 5), padx=(5, 10), sticky="NSEW")  # type: ignore
         self.button_expand.grid(row=1, column=0, columnspan=2, pady=(5, 10), padx=(10, 5), sticky="NSEW")  # type: ignore
         self.button_continuous.grid(row=1, column=2, pady=(5, 10), padx=(5, 10), sticky="NSEW")  # type: ignore
+        self.button_pause.configure(state=DISABLED)  # type: ignore
         self.button_stop.configure(state=DISABLED)  # type: ignore
         self.show()
 
@@ -83,9 +84,9 @@ class Control(CTk):
             self.update_buttons(button)
             if self.app.mode == "manual":
                 if self.app.duration == "short":
-                    Thread(target=self.app.manual.start_short_exposure).start()
+                    Thread(target=self.app.manual.start_exposure).start()
                 elif self.app.duration == "long":
-                    Thread(target=self.app.manual.start_long_exposure).start()
+                    Thread(target=self.app.manual.start_exposure, args=["long"]).start()
             elif self.app.mode == "FPD":
                 Thread(target=self.app.smart.start_smart_exposure).start()
             elif self.app.mode == "mA":
@@ -119,7 +120,7 @@ class Control(CTk):
             if self.app.mode == "FPD":
                 Thread(target=self.app.smart.start_smart_loop).start()
             elif self.app.mode == "auto":
-                Thread(target=self.app.smart.start_auto_loop).start()
+                Thread(target=self.app.smart.start_auto_loop, args=['long']).start()
 
         elif button == "expand":
             self.app.open_expanded()

@@ -4,6 +4,7 @@ from Exposure.constants import *
 from ComputerVision.ComputerVision import ComputerVision
 from ComputerVision.cv_types import status_mcu
 from Exposure.Generic import Generic
+from GUI.constants import *
 
 
 class SmartExposure:
@@ -47,8 +48,11 @@ class SmartExposure:
 
             total += self.generic.wait_standby()
             self.app.vision.status_label.configure(text="Status: Standby")  # type: ignore
-            variant = "long" if timer else "short"
-            self.app.com.start(variant=variant)
+            if timer:
+                print("LONG EXPOSURE")
+                self.app.com.start_long()
+            else:
+                self.app.com.start_short()
             total += self.generic.wait_exposure_start()
             self.app.vision.status_label.configure(text="Status: Under exposure")  # type: ignore
             total += self.generic.wait_exposure_end()
@@ -61,7 +65,7 @@ class SmartExposure:
         self.generic.exposureMessage(total)
         return total
 
-    def start_smart_loop(self) -> int:
+    def start_smart_loop(self, variant: exposure_option = "short") -> int:
         # for semi mode
         total = 0
         exposures = 0
@@ -69,8 +73,9 @@ class SmartExposure:
             try:
                 total += self.generic.wait_standby(count=exposures)
                 self.app.vision.status_label.configure(text="Status: Standby")  # type: ignore
-                self.app.com.start(variant="short")
-                total += self.generic.wait_exposure_start()
+                self.app.com.start_short()
+                if variant == "short":
+                    total += self.generic.wait_exposure_start()
                 self.app.vision.status_label.configure(text="Status: Under exposure")  # type: ignore
                 total += self.generic.wait_exposure_end()
                 self.app.vision.status_label.configure(text="Status: Blocked")  # type: ignore
@@ -88,7 +93,7 @@ class SmartExposure:
         self.app.change_app_state("stop")
         return total
 
-    def start_auto_loop(self):
+    def start_auto_loop(self, variant: exposure_option = "short"):
         total = 0
         try:
             for calibration in self.app.selected_cal:
@@ -104,7 +109,7 @@ class SmartExposure:
                 sleep(2)
                 total += 2
 
-                if not self.app.mcu_interactor.click_calibration_button(calibration):
+                if not self.app.mcu_interactor.click_calibration_button(calibration):  # type: ignore
                     raise AttributeError
 
                 if not self.app.aws_interactor.enable_FPD_calib():
@@ -118,7 +123,7 @@ class SmartExposure:
                     total = self._start_smart_NO_exposure()
 
                 else:
-                    total = self.start_smart_exposure()
+                    total = self.start_smart_loop(variant)
 
         except ConnectionAbortedError:
             self.generic.abortMessage()

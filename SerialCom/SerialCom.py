@@ -62,9 +62,17 @@ class SerialCom:
         self.app.log("serial", "error", "Communication error")
         raise ConnectionAbortedError("message was not responded")
 
-    def start(self, variant: exposure_option):
-        message = "S" if variant == "short" else "L"
-        print(message)
+    def start_short(self):
+        message = "S"
+        try:
+            if self.communicate(message):
+                return True
+            return False
+        except ConnectionAbortedError:
+            raise ConnectionAbortedError("message was not responded")
+        
+    def start_long(self):
+        message = "L"
         try:
             if self.communicate(message):
                 return True

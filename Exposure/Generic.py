@@ -45,8 +45,8 @@ class Generic:
 
     def calibrationMessage(self, seconds: int):
         time = self.convert_seconds(seconds)
-        self.app.output_log.append(f"Calibration completed! total time: {time}")
-        self.log("smart", "success", f"Calibration completed! total time: {time}")
+        self.app.output_log.append(f"Calibration completed!\ntotal time: {time}")
+        self.log("smart", "success", f"Calibration completed!\ntotal time: {time}")
 
     def underExpMessage(self, seconds: int, isLong: bool = False):
         time = self.convert_seconds(seconds)
@@ -55,16 +55,16 @@ class Generic:
 
     def exposureMessage(self, seconds: int):
         time = self.convert_seconds(seconds)
-        self.app.output_log.append(f"Exposure completed! total time: {time}")
-        self.log("smart", "success", f"Exposure completed! total time: {time}")
+        self.app.output_log.append(f"Exposure completed!\ntotal time: {time}")
+        self.log("smart", "success", f"Exposure completed!\ntotal time: {time}")
 
     def setExposureMessage(self, seconds: int, exposures: int):
         time = self.convert_seconds(seconds)
         self.app.output_log.append(
-            f"{exposures} exposures completed! total time: {time}"
+            f"{exposures} exposures completed!\ntotal time: {time}"
         )
         self.log(
-            "smart", "success", f"{exposures} exposures completed! total time: {time}"
+            "smart", "success", f"{exposures} exposures completed!\ntotal time: {time}"
         )
 
     def __init__(self, app: GUI) -> None:

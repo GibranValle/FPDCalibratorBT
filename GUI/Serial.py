@@ -24,7 +24,7 @@ class Serial(CTk):
         )
 
         self.status_serial = CTkLabel(
-            self.frame_serial, text="Offline", font=app.font_title, text_color=WARNING_COLOR
+            self.frame_serial, text="Offline", font=app.font_title, text_color=ERR_COLOR_LIGHT
         )
 
         self.button_serial = CTkButton(
@@ -58,7 +58,7 @@ class Serial(CTk):
                 return
             else:
                 sleep(1.5)
-                self.status_serial.configure(text="Online", fg_color=OK_COLOR)  # type: ignore
+                self.status_serial.configure(text="Online", text_color=OK_COLOR)  # type: ignore
                 self.button_serial.configure(text="Disconnect", fg_color=ERR_COLOR, hover_color=ERR_COLOR_HOVER)  # type: ignore
         elif not self.serial.is_offline() and self.serial.is_listening():
             # close comm
@@ -67,7 +67,7 @@ class Serial(CTk):
             except ConnectionError:
                 return
             else:
-                self.status_serial.configure(text="Offline", fg_color=WARNING_COLOR)  # type: ignore
+                self.status_serial.configure(text="Online", text_color=ERR_COLOR_LIGHT)  # type: ignore
                 self.button_serial.configure(text="Connect", fg_color=OK_COLOR, hover_color=OK_COLOR_HOVER)  # type: ignore
 
     def show(self):

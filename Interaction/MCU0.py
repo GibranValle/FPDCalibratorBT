@@ -1,6 +1,6 @@
 from Interaction.Interaction import Interaction
 from typing import Literal
-from ComputerVision.cv_types import mcu, mcu_opt, MCU, MCU_OPT
+from ComputerVision.cv_types import mcu, mcu_opt, MCU, MCU_OPT, all_buttons
 
 
 class MCU0(Interaction):
@@ -65,7 +65,7 @@ class MCU0(Interaction):
                 if x > 0 and y > 0:
                     self.app.log("mcu0", "info", "page 1 found, clicking cal opt tab")
                     print("page 1 found, clicking cal opt tab")
-                    x, y = self._get_fraction_point(x, y, w, h, "1/2")
+                    x, y = self._get_fraction_point(x, y, w, h, "3/4")
                     self._click_point(x, y)
                     return True
         self.app.log("mcu0", "error", "Calibration opt tab not visible")
@@ -120,7 +120,7 @@ class MCU0(Interaction):
         print("Cal tab not visible")
         return False
 
-    def click_calibration_button(self, button: mcu | mcu_opt) -> bool:
+    def click_calibration_button(self, button: mcu | mcu_opt | all_buttons) -> bool:
         online = not self.app.com.is_offline()
         try:
             if self._open_MUTL_MCU():
@@ -146,6 +146,7 @@ class MCU0(Interaction):
                     raise RuntimeError("Error: CALIBRATION TAB NOT VISIBLE")
 
             elif button in MCU_OPT:
+                print("calib optional")
                 if self._click_cal_opt_tab():
                     text = "Calibration Opt tab clicked"
                     self.app.output_log.append(text)
@@ -156,6 +157,7 @@ class MCU0(Interaction):
             return False
 
         try:
+            print("looking for buttons")
             x, y = self.cv.get_icon_coords(button)
             if x > 0 and y > 0:
                 self._click_point(x, y)
