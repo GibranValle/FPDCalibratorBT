@@ -35,11 +35,18 @@ class ManualExposure:
             return
 
         try:
-            for i in range(LONG_TIME_EXPOSURE + 1):
-                if self.app.app_state == "stop":
-                    raise StopIteration
-                sleep(1)
-                self.generic.underExpMessage(i, variant == "long")
+            if variant == "short":
+                for i in range(SHORT_TIME_EXPOSURE + 1):
+                    if self.app.app_state == "stop":
+                        raise StopIteration
+                    sleep(1)
+                    self.generic.underExpMessage(i, False)
+            else:
+                for i in range(LONG_TIME_EXPOSURE + 1):
+                    if self.app.app_state == "stop":
+                        raise StopIteration
+                    sleep(1)
+                    self.generic.underExpMessage(i, True)
             try:
                 sleep(0.3)
                 self.app.com.end()

@@ -58,7 +58,6 @@ class ComputerVision:
         elif button in RU:
             dir: keys = "ru"
         path: str = self.image_repository[dir][button]
-        print(path)
         try:
             confidence = 0.95
             x, y = locateCenterOnScreen(path, confidence=confidence)  # type: ignore

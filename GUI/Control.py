@@ -65,9 +65,8 @@ class Control(CTk):
         self.button_stop.grid(row=0, column=2, pady=(10, 5), padx=(5, 10), sticky="NSEW")  # type: ignore
         self.button_expand.grid(row=1, column=0, columnspan=2, pady=(5, 10), padx=(10, 5), sticky="NSEW")  # type: ignore
         self.button_continuous.grid(row=1, column=2, pady=(5, 10), padx=(5, 10), sticky="NSEW")  # type: ignore
-        self.button_pause.configure(state=DISABLED)  # type: ignore
-        self.button_stop.configure(state=DISABLED)  # type: ignore
         self.show()
+        self.update_buttons("stop")
 
     def action(self, button: control_option) -> None:
         if button == "start":
@@ -75,11 +74,13 @@ class Control(CTk):
                 self.app.output_log.append("Error: Usar botón continuo")
                 self.app.log("control", "error", "Favor de utilizar botón continuo!")
                 return
+
             if self.app.app_state == "pause":
                 self.app.change_app_state(button)
                 self.app.output_log.append("Request resume...")
                 self.app.log("control", "info", "Request resume...")
                 return
+
             self.app.change_app_state(button)
             self.update_buttons(button)
             if self.app.mode == "manual":
@@ -88,6 +89,7 @@ class Control(CTk):
                 elif self.app.duration == "long":
                     Thread(target=self.app.manual.start_exposure, args=["long"]).start()
             elif self.app.mode == "FPD":
+                print("fpd")
                 Thread(target=self.app.smart.start_smart_exposure).start()
             elif self.app.mode == "mA":
                 Thread(target=self.app.smart.start_smart_exposure, args=[True]).start()
@@ -95,21 +97,21 @@ class Control(CTk):
         elif button == "pause":
             self.app.change_app_state(button)
             self.update_buttons(button)
-            self.button_continuous.configure(state=DISABLED)  # type: ignore
 
         elif button == "stop":
             self.app.change_app_state(button)
             self.update_buttons(button)
-            self.button_continuous.configure(state=NORMAL)  # type: ignore
 
         elif button == "continuos":
+            if self.app.app_state == "pause":
+                self.app.change_app_state(button)
+                return
+
             if self.app.mode == "mA":
                 self.app.output_log.append("Error: Usar botón start")
                 self.app.log("auto", "error", "Favor de utilizar botón start!")
                 return
-            if self.app.app_state == "pause":
-                self.app.change_app_state(button)
-                return
+
             if self.app.current_calib == "None":
                 self.app.output_log.append("Error: Select calibration from list")
                 self.app.log("control", "warning", "Select calibration from list")
@@ -118,9 +120,10 @@ class Control(CTk):
             self.app.change_app_state(button)
             self.update_buttons(button)
             if self.app.mode == "FPD":
+                print("smart loop")
                 Thread(target=self.app.smart.start_smart_loop).start()
             elif self.app.mode == "auto":
-                Thread(target=self.app.smart.start_auto_loop, args=['long']).start()
+                Thread(target=self.app.smart.start_auto_loop).start()
 
         elif button == "expand":
             self.app.open_expanded()
@@ -135,10 +138,10 @@ class Control(CTk):
             self.button_start.configure(state=NORMAL)  # type: ignore
             self.button_pause.configure(state=DISABLED)  # type: ignore
             self.button_stop.configure(state=NORMAL)  # type: ignore
-            self.button_continuous.configure(state=DISABLED)  # type: ignore
+            self.button_continuous.configure(state=NORMAL)  # type: ignore
         elif button == "stop":
             self.button_start.configure(state=NORMAL)  # type: ignore
-            self.button_pause.configure(state=NORMAL)  # type: ignore
+            self.button_pause.configure(state=DISABLED)  # type: ignore
             self.button_stop.configure(state=DISABLED)  # type: ignore
             self.button_continuous.configure(state=NORMAL)  # type: ignore
         elif button == "continuos":

@@ -37,6 +37,8 @@ class SmartExposure:
         for i in range(total, 0, -1):
             sleep(1)
             self.generic.timerMessage(i)
+            if self.app.app_state == "stop":
+                raise RuntimeError
         return total
 
     def start_smart_exposure(self, timer: bool = False) -> int:
@@ -47,6 +49,7 @@ class SmartExposure:
                 total = self.start_timer()
 
             total += self.generic.wait_standby()
+            print(total)
             self.app.vision.status_label.configure(text="Status: Standby")  # type: ignore
             if timer:
                 print("LONG EXPOSURE")
@@ -54,8 +57,10 @@ class SmartExposure:
             else:
                 self.app.com.start_short()
             total += self.generic.wait_exposure_start()
+            print(total)
             self.app.vision.status_label.configure(text="Status: Under exposure")  # type: ignore
             total += self.generic.wait_exposure_end()
+
             self.app.vision.status_label.configure(text="Status: Blocked")  # type: ignore
             self.app.com.end()
         except RuntimeError:
@@ -63,51 +68,55 @@ class SmartExposure:
             self.app.vision.status_label.configure(text="Status: Blocked")  # type: ignore
             return total
         self.generic.exposureMessage(total)
+        self.app.control.action("stop")
         return total
 
-    def start_smart_loop(self, variant: exposure_option = "short") -> int:
+    def start_smart_loop(self) -> int:
         # for semi mode
+        print("smart loop")
         total = 0
         exposures = 0
         while True:
             try:
                 total += self.generic.wait_standby(count=exposures)
+                print(total)
                 self.app.vision.status_label.configure(text="Status: Standby")  # type: ignore
                 self.app.com.start_short()
-                if variant == "short":
-                    total += self.generic.wait_exposure_start()
+                total += self.generic.wait_exposure_start()
+                print(total)
                 self.app.vision.status_label.configure(text="Status: Under exposure")  # type: ignore
                 total += self.generic.wait_exposure_end()
+                print(total)
                 self.app.vision.status_label.configure(text="Status: Blocked")  # type: ignore
-                self.app.com.end()
                 exposures += 1
+                self.app.com.end()
                 if self.generic.is_calib_passed():
                     self.app.vision.status_label.configure(text="Status: Calib passed")  # type: ignore
                     break
             except RuntimeError:
-                self.app.change_app_state("stop")
                 self.generic.abortMessage()
                 self.app.vision.status_label.configure(text="Status: Blocked")  # type: ignore
+                self.app.control.action("stop")
                 break
         self.generic.setExposureMessage(total, exposures)
-        self.app.change_app_state("stop")
+        self.app.control.action("stop")
         return total
 
-    def start_auto_loop(self, variant: exposure_option = "short"):
+    def start_auto_loop(self):
         total = 0
         try:
             for calibration in self.app.selected_cal:
                 if self.app.app_state == "stop":
                     raise ConnectionAbortedError
 
-                text = f"Stabilization for {calibration} calib"
+                text = f"Initialization for {calibration} calib"
+                sleep(1)
+                total += 1
+
                 self.app.output_log.append(text)
                 self.app.log("control", "info", text)
                 self.app.current_calib = calibration
                 self.app.change_current_calib(calibration)
-
-                sleep(2)
-                total += 2
 
                 if not self.app.mcu_interactor.click_calibration_button(calibration):  # type: ignore
                     raise AttributeError
@@ -119,20 +128,26 @@ class SmartExposure:
                 self.app.output_log.append(text)
                 self.app.log("control", "info", text)
 
+                text = f"FPD stabilization for {calibration} calib"
+                sleep(3)
+                total += 3
+
                 if calibration == "offset" or calibration == "defect":
                     total = self._start_smart_NO_exposure()
 
                 else:
-                    total = self.start_smart_loop(variant)
+                    total = self.start_smart_loop()
 
         except ConnectionAbortedError:
             self.generic.abortMessage()
             self.app.control.action("stop")
 
         except AttributeError:
+            self.generic.errorMessage()
             self.app.control.action("stop")
 
         except RuntimeError:
+            self.generic.errorMessage()
             self.app.control.action("stop")
 
         else:

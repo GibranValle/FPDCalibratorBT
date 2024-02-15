@@ -27,6 +27,10 @@ class Generic:
         time = self.convert_seconds(seconds)
         self.app.output_log.append(f"In pause: {time}")
 
+    def errorMessage(self):
+        self.app.output_log.append(f"Aborted!")
+        self.log("smart", "error", "Error")
+
     def abortMessage(self):
         self.app.output_log.append(f"Aborted!")
         self.log("smart", "error", "request of abortion")
@@ -34,6 +38,10 @@ class Generic:
     def timerMessage(self, seconds: int):
         time = self.convert_seconds(seconds)
         self.app.output_log.append(f"Countdown: {time}")
+
+    def standByMessage(self, seconds: int):
+        time = self.convert_seconds(seconds)
+        self.app.output_log.append(f"Waiting for exposure ready: {time}")
 
     def startMessage(self, seconds: int):
         time = self.convert_seconds(seconds)
@@ -45,8 +53,8 @@ class Generic:
 
     def calibrationMessage(self, seconds: int):
         time = self.convert_seconds(seconds)
-        self.app.output_log.append(f"Calibration completed!\ntotal time: {time}")
-        self.log("smart", "success", f"Calibration completed!\ntotal time: {time}")
+        self.app.output_log.append(f"Calibration completed!\nTotal time: {time}")
+        self.log("smart", "success", f"Calibration completed!\nTotal time: {time}")
 
     def underExpMessage(self, seconds: int, isLong: bool = False):
         time = self.convert_seconds(seconds)
@@ -55,16 +63,16 @@ class Generic:
 
     def exposureMessage(self, seconds: int):
         time = self.convert_seconds(seconds)
-        self.app.output_log.append(f"Exposure completed!\ntotal time: {time}")
-        self.log("smart", "success", f"Exposure completed!\ntotal time: {time}")
+        self.app.output_log.append(f"Exposure completed!\nTotal time: {time}")
+        self.log("smart", "success", f"Exposure completed!\nTotal time: {time}")
 
     def setExposureMessage(self, seconds: int, exposures: int):
         time = self.convert_seconds(seconds)
         self.app.output_log.append(
-            f"{exposures} exposures completed!\ntotal time: {time}"
+            f"{exposures} exposures completed!\nTotal time: {time}"
         )
         self.log(
-            "smart", "success", f"{exposures} exposures completed!\ntotal time: {time}"
+            "smart", "success", f"{exposures} exposures completed!\nTotal time: {time}"
         )
 
     def __init__(self, app: GUI) -> None:
@@ -150,15 +158,15 @@ class Generic:
     def wait_standby(self, count: int = 0) -> int:
         total = 0
         for i in range(MAX_TIME_STANDBY):
+            self.standByMessage(i)
+            sleep(SLEEP_TIME)
+
             if count > 0:
                 if self.is_calib_passed():
                     break
 
             self._get_mu_state("standby")
             self._get_gen_state("push")
-            time = self.convert_seconds(i)
-            self.app.output_log.append(f"Waiting for exposure: {time}")
-            sleep(SLEEP_TIME)
             total += 1
 
             if self.app.click_ok:
@@ -189,13 +197,21 @@ class Generic:
     def wait_exposure_start(self) -> int:
         total = 0
         for i in range(MAX_TIME_BEFORE_EXPOSURE):
-            if self.is_calib_passed():
-                return total
+            sleep(SLEEP_TIME)
+            self.startMessage(i)
+            if i >= 2:
+                if self.is_calib_passed():
+                    return total
+
+                if self.status_gen == "exposing" or self.status_mu == "exposure":
+                    time = self.convert_seconds(i)
+                    self.log(
+                        "smart", "info", f"xray gen should be exposing, waited: {time}"
+                    )
+                    break
 
             self._get_mu_state("exposure")
             self._get_gen_state("exposing")
-            self.startMessage(i)
-            sleep(SLEEP_TIME)
             total += i
             if self.app.app_state == "pause":
                 while self.app.app_state == "pause":
@@ -206,24 +222,20 @@ class Generic:
             elif self.app.app_state == "stop":
                 self.abortMessage()
                 raise RuntimeError("Aborted requested")
-            elif self.status_gen == "exposing" or self.status_mu == "exposure":
-                time = self.convert_seconds(i)
-                self.log(
-                    "smart", "info", f"xray gen should be exposing, waited: {time}"
-                )
-                break
+
         return total
 
     def wait_exposure_end(self) -> int:
         total = 0
         for i in range(MAX_TIME_EXPOSURE):
+            sleep(SLEEP_TIME)
+            self.endMessage(i)
+
             if self.is_calib_passed():
                 return total
 
             self._get_mu_state("blocked")
             self._get_gen_state("release")
-            self.endMessage(i)
-            sleep(SLEEP_TIME)
             total += 1
 
             if self.app.app_state == "pause":
