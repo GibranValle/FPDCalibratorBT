@@ -121,7 +121,7 @@ class MCU0(Interaction):
         return False
 
     def click_calibration_button(self, button: mcu | mcu_opt | all_buttons) -> bool:
-        online = not self.app.com.is_offline()
+        online = not self.app.com.is_offline
         try:
             if self._open_MUTL_MCU():
                 text = "MUTL Opened"
