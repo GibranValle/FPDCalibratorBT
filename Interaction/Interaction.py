@@ -12,8 +12,10 @@ from typing import Literal
 class Interaction:
     from GUI.GUI import GUI
 
-    available_programs = Literal["RuPcTool.exe", "MU", "MCU", "MUTL.exe"]
-    available_windows = Literal["RU PC-TOOL", "MU0", "MCU0"]
+    available_programs = Literal[
+        "RuPcTool.exe", "MU", "MCU", "MUTL.exe", "FF_Generator_Tool_v1_00_10.exe"
+    ]
+    available_windows = Literal["RU PC-TOOL", "MU0", "MCU0", "FF_Generator_Tool"]
 
     def __init__(self, app: GUI) -> None:
         self.cv = ComputerVision()
@@ -69,7 +71,7 @@ class Interaction:
         try:
             print("Interactor - trying to open app...")
             if appName == "RuPcTool.exe":
-                route = "C:\Program Files\Fujifilm\FCR\TOOL\RuPcTool\\"  # type: ignore
+                route = "C:\\Program Files\\Fujifilm\\FCR\\TOOL\\RuPcTool\\"
                 exe = "RuPcTool"
                 args = ""
                 subprocess.Popen(route + exe + args)
@@ -77,7 +79,7 @@ class Interaction:
                 self.app.log("gui", "info", "RUPCTOOL opening...")
 
             elif appName == "MU":
-                route = "C:\Program Files\FujiFilm\FCR\TOOL\MUTL\\"  # type: ignore
+                route = "C:\\Program Files\\FujiFilm\\FCR\\TOOL\\MUTL\\"
                 exe = "MUTL"
                 args = " /IP:192.168.0.100 /RUNAME:MU0 /TYPE:FDR-2500A"
                 subprocess.Popen(route + exe + args)
@@ -85,12 +87,21 @@ class Interaction:
                 self.app.log("gui", "info", "MU opening...")
 
             elif appName == "MCU":
-                route = "C:\Program Files\FujiFilm\FCR\TOOL\MUTL\\"  # type: ignore
+                route = "C:\\Program Files\\FujiFilm\\FCR\\TOOL\\MUTL\\"
                 exe = "MUTL"
-                args = " /IP:192.168.0.101 /RUNAME:MCU0 /TYPE:FDR-3000DRL /FCR:C:\Program Files\FujiFilm\FCR\\"  # type: ignore
+                args = " /IP:192.168.0.101 /RUNAME:MCU0 /TYPE:FDR-3000DRL /FCR:C:\\Program Files\\FujiFilm\\FCR\\"
                 subprocess.Popen(route + exe + args)
                 print("Interactor - openin MCU")
                 self.app.log("gui", "info", "MCU opening...")
+
+            elif appName == "FF_Generator_Tool_v1_00_10.exe":
+                route = "C:\\Program Files\\FujiFilm\\FF_Generator_Tool\\"
+                # route = "C:\\Users\\gibra\\Downloads\\"
+                exe = "FF_Generator_Tool_v1_00_10.exe"
+                args = ""  # type: ignore
+                subprocess.Popen(route + exe + args)
+                print("Interactor - openin FF")
+                self.app.log("gui", "info", "FF opening...")
 
         except FileNotFoundError:
             print("Interactor - file not found")
@@ -132,7 +143,7 @@ class Interaction:
 
     @staticmethod
     def _process_exists(process_name: available_programs):
-        print(f"looking for process: {process_name}")
+        # print(f"looking for process: {process_name}")
         call = "TASKLIST", "/FI", "imagename eq %s" % process_name
         # use build-in check_output right away
         output = subprocess.check_output(call)
@@ -140,8 +151,8 @@ class Interaction:
         output = output.decode("latin-1")
         # check in last line for process name
         last_line = output.strip().split("\r\n")[-1]
-        # print(last_line)
-        # print(last_line)
         # because Fail message could be translated
-        test = last_line.lower().startswith(process_name.lower())
+        # print(last_line.lower()[0:20], process_name.lower()[0:20])
+        # task list cuts long strings...
+        test = last_line.lower()[0:20].startswith(process_name.lower()[0:20])
         return test

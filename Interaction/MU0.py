@@ -12,15 +12,16 @@ class MU0(Interaction):
         super().__init__(app)
         self.app = app
 
-    def _open_MUTL_MU(self) -> bool:
+    def open_MUTL_MU(self) -> bool:
         if self._process_exists("MUTL.exe"):
             self._changeWindow("MU0")
             self.app.log("mu0", "info", "Program exists changing window")
             return True
         if self._openApp("MU"):
-            self.app.log("mu0", "info", "Program not exists opening")
+            self.app.log("mu0", "error", "RUPCTools not installed")
             return True
-        self.app.log("mu0", "error", "Program not installed")
+        self.app.output_log.append("Error: RUPCTools \nnot installed")
+        self.app.log("mcu0", "error", "RUPCTools not installed")
         return False
 
     def _click_generator_tab(self):
@@ -110,7 +111,7 @@ class MU0(Interaction):
     def enable_ment_mode(self) -> bool:
         online = not self.app.com.is_offline()
         try:
-            if self._open_MUTL_MU():
+            if self.open_MUTL_MU():
                 self.app.output_log.append("MUTL opened")
             else:
                 self.app.output_log.append("MUTL could not be opened, Retry")
@@ -146,7 +147,7 @@ class MU0(Interaction):
     def toggle_MAG(self) -> bool:
         online = not self.app.com.is_offline()
         try:
-            if self._open_MUTL_MU():
+            if self.open_MUTL_MU():
                 self.app.output_log.append("MUTL opened")
             else:
                 if online:
@@ -184,7 +185,7 @@ class MU0(Interaction):
     def toggle_HVL(self) -> bool:
         online = not self.app.com.is_offline()
         try:
-            if self._open_MUTL_MU():
+            if self.open_MUTL_MU():
                 self.app.output_log.append("MUTL opened")
             else:
                 self.app.output_log.append("MUTL could not be opened, Retry")

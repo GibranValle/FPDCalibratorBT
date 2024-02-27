@@ -12,15 +12,16 @@ class MCU0(Interaction):
     def __init__(self, app: GUI) -> None:
         super().__init__(app)
 
-    def _open_MUTL_MCU(self) -> bool:
+    def open_MUTL_MCU(self) -> bool:
         if self._process_exists("MUTL.exe"):
             self._changeWindow("MCU0")
             self.app.log("mcu0", "info", "Program exists changing window")
             return True
         if self._openApp("MCU"):
-            self.app.log("mcu0", "info", "Program not exists opening")
+            self.app.log("mcu0", "error", "RUPCTools not installed")
             return True
-        self.app.log("mcu0", "error", "Program not installed")
+        self.app.output_log.append("Error: RUPCTools \nnot installed")
+        self.app.log("mcu0", "error", "RUPCTools not installed")
         return False
 
     def _click_cal_opt_tab(self):
@@ -123,7 +124,7 @@ class MCU0(Interaction):
     def click_calibration_button(self, button: mcu | mcu_opt | all_buttons) -> bool:
         online = not self.app.com.is_offline
         try:
-            if self._open_MUTL_MCU():
+            if self.open_MUTL_MCU():
                 text = "MUTL Opened"
                 self.app.output_log.append(text)
                 self.app.log("mcu0", "success", text)

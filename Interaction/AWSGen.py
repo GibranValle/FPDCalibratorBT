@@ -72,6 +72,17 @@ class AWSGen(Interaction):
             return
         self._openApp("RuPcTool.exe")
 
+    def openFF_Gen(self) -> bool:
+        if self._process_exists("FF_Generator_Tool_v1_00_10.exe"):
+            self._changeWindow("FF_Generator_Tool")
+            return True
+        if self._openApp("FF_Generator_Tool_v1_00_10.exe"):
+            self.app.log("mcu0", "error", "RUPCTools not installed")
+            return True
+        self.app.output_log.append("Error: FF_Generator_Tool\nnot installed")
+        self.app.log("mcu0", "error", "FF_Generator_Tool not installed")
+        return False
+
     def closeRU(self):
         self.closeApp("RuPcTool.exe")
 

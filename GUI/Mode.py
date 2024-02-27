@@ -145,7 +145,7 @@ class Mode(CTk):
             self.button_FPD.configure(text_color=DISABLED_COLOR)  # type: ignore
 
     def show(self):
-        self.frame_mode.grid(row=1, column=0, columnspan=3, sticky="NSEW", padx=(20, 10), pady=10)  # type: ignore
+        self.frame_mode.grid(row=2, column=0, columnspan=3, sticky="NSEW", padx=(20, 10), pady=10)  # type: ignore
 
     # def hide(self):
     #     self.frame_mode.grid_forget()

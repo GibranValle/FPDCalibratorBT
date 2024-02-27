@@ -152,7 +152,7 @@ class Control(CTk):
             self.button_continuous.configure(state=DISABLED)  # type: ignore
 
     def show(self):
-        self.frame_control.grid(row=2, column=2, padx=10, pady=(10, 20), sticky="NSEW")  # type: ignore
+        self.frame_control.grid(row=3, column=2, padx=10, pady=(10, 20), sticky="NSEW")  # type: ignore
 
     def hide(self):
         self.frame_control.grid_forget()

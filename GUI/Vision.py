@@ -50,7 +50,7 @@ class Vision(CTk):
 
 
     def show(self):
-        self.frame_vision.grid(row=2, column=0, columnspan=2, sticky="NSEW", padx=(20, 10), pady=(10, 20))  # type: ignore
+        self.frame_vision.grid(row=3, column=0, columnspan=2, sticky="NSEW", padx=(20, 10), pady=(10, 20))  # type: ignore
 
     def hide(self):
         self.frame_vision.grid_forget()

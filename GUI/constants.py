@@ -54,7 +54,9 @@ class_option = Literal[
 ]
 level_option = Literal["info", "error", "warning", "success"]
 control_option = Literal["start", "pause", "stop", "continuos", "expand"]
-aux_option = Literal["enable", "hlv", "mag", "select", "calib", "fpd"]
+aux_option = Literal[
+    "enable", "hlv", "mag", "select", "calib", "fpd", "ff", "mcu0", "mu0"
+]
 dur_option = Literal["short", "long"]
 mode_option = Literal["mA", "FPD", "manual", "auto"]
 ok_option = Literal["on", "off"]
@@ -66,7 +68,6 @@ all_calibrations = Literal[
     "pixel_defect",
     "shading",
     "uniformity",
-    
     "defect_solid_stereo",
     "defect_solid_biopsy",
     "defect_solid_tomo",

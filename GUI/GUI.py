@@ -13,6 +13,7 @@ class GUI(CTk):
     font_title: tuple[str, int, str] = ("Consolas", 18, "bold")
     font_text: tuple[str, int] = ("Consolas", 16)
     font_output: tuple[str, int] = ("Consolas", 13)
+    font_textbox: tuple[str, int] = ("Consolas", 11)
     from GUI.constants import tabs_list, class_option, level_option, control_option
 
     def __init__(self) -> None:
@@ -34,7 +35,7 @@ class GUI(CTk):
 
         super().__init__()  # type: ignore
         self.attributes("-topmost", True)  # type: ignore
-        self.geometry("960x420")  # type: ignore
+        self.geometry("960x440")  # type: ignore
         self.title("FPD Calibration bot")  # type: ignore
         self.resizable(False, False)  # type: ignore
         self.protocol("WM_DELETE_WINDOW", self.on_closing)  # type: ignore
@@ -58,9 +59,10 @@ class GUI(CTk):
         self.grid_columnconfigure(1, weight=1, minsize=200)
         self.grid_columnconfigure(2, weight=1, minsize=100)
         self.grid_columnconfigure(3, weight=1, minsize=250)
-        self.rowconfigure(0, weight=1, minsize=135)
-        self.rowconfigure(1, weight=1, minsize=135)
-        self.rowconfigure(2, weight=1, minsize=75)
+        self.rowconfigure(0, weight=1, minsize=90)
+        self.rowconfigure(1, weight=1, minsize=90)
+        self.rowconfigure(2, weight=1, minsize=120)
+        self.rowconfigure(3, weight=1, minsize=60)
         # GUI COMPONENTS
         self.toplevel_window: CTkToplevel
         self.expanded_window: CTkToplevel
@@ -69,7 +71,7 @@ class GUI(CTk):
         self.auxiliary = Auxiliary(self)
         self.modes = Mode(self)
         self.control = Control(self)
-        self.output_log = Log(self)
+        self.output_log = Log(self)  # type: ignore
 
         self.aws_interactor = AWSGen(self)
         self.mu_interactor = MU0(self)

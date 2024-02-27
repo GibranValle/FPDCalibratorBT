@@ -24,7 +24,10 @@ class Serial(CTk):
         )
 
         self.status_serial = CTkLabel(
-            self.frame_serial, text="Offline", font=app.font_title, text_color=ERR_COLOR_LIGHT
+            self.frame_serial,
+            text="Offline",
+            font=app.font_title,
+            text_color=ERR_COLOR_LIGHT,
         )
 
         self.button_serial = CTkButton(
@@ -71,7 +74,7 @@ class Serial(CTk):
                 self.button_serial.configure(text="Connect", fg_color=OK_COLOR, hover_color=OK_COLOR_HOVER)  # type: ignore
 
     def show(self):
-        self.frame_serial.grid(row=0, column=0, sticky="NSEW", padx=(20, 10), pady=(20, 10))  # type: ignore
+        self.frame_serial.grid(row=0, column=0, rowspan=2, sticky="NSEW", padx=(20, 10), pady=(20, 10))  # type: ignore
 
     def hide(self):
         self.frame_serial.grid_forget()
