@@ -23,7 +23,7 @@ image_repository = {
         "uniformity": "./img/mcu/uniformity.PNG",
     },
     "mcu_opt": {
-        "defect_solid_bpy": "./img/mcu_opt/defect_solid_bpy.PNG",
+        "defect_solid_biopsy": "./img/mcu_opt/defect_solid_biopsy.PNG",
         "defect_solid_stereo": "./img/mcu_opt/defect_solid_stereo.PNG",
         "defect_solid_tomo": "./img/mcu_opt/defect_solid_tomo.PNG",
         "uniformity_biopsy": "./img/mcu_opt/uniformity_biopsy.PNG",

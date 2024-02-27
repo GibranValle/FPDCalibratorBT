@@ -136,8 +136,10 @@ class Generic:
         total = 0
         for i in range(MAX_TIME_STANDBY):
             time = self.convert_seconds(i)
-            self.app.output_log.append(f"Waiting for calib end: {time}")
+            self.app.output_log.append(f"Waiting for calib PASS : {time}")
             sleep(SLEEP_TIME)
+            total += i
+            
             if self.is_calib_passed():
                 time = self.convert_seconds(i)
                 self.log(
@@ -152,7 +154,6 @@ class Generic:
             elif self.app.app_state == "stop":
                 self.abortMessage()
                 raise RuntimeError("Aborted requested")
-            total += i
         return total
 
     def wait_standby(self, count: int = 0) -> int:
@@ -160,20 +161,27 @@ class Generic:
         for i in range(MAX_TIME_STANDBY):
             self.standByMessage(i)
             sleep(SLEEP_TIME)
+            total += 1
 
             if count > 0:
                 if self.is_calib_passed():
                     break
-
-            self._get_mu_state("standby")
-            self._get_gen_state("push")
-            total += 1
 
             if self.app.click_ok:
                 clicked = self.app.aws_interactor.click_ok()
                 if clicked:
                     self.app.output_log.append(f"Clicked ok button")
                     self.log("smart", "info", "button clicked")
+
+            self._get_mu_state("standby")
+            self._get_gen_state("push")
+
+            if self.status_gen == "push" or self.status_mu == "standby":
+                time = self.convert_seconds(i)
+                self.log(
+                    "smart", "info", f"xray gen is ready for exposure, waited: {time}"
+                )
+                break
 
             if self.app.app_state == "pause":
                 while self.app.app_state == "pause":
@@ -186,33 +194,28 @@ class Generic:
                 self.abortMessage()
                 raise RuntimeError("Aborted requested")
 
-            elif self.status_gen == "push" or self.status_mu == "standby":
-                time = self.convert_seconds(i)
-                self.log(
-                    "smart", "info", f"xray gen is ready for exposure, waited: {time}"
-                )
-                break
         return total
 
     def wait_exposure_start(self) -> int:
         total = 0
         for i in range(MAX_TIME_BEFORE_EXPOSURE):
-            sleep(SLEEP_TIME)
             self.startMessage(i)
-            if i >= 2:
-                if self.is_calib_passed():
-                    return total
 
-                if self.status_gen == "exposing" or self.status_mu == "exposure":
-                    time = self.convert_seconds(i)
-                    self.log(
-                        "smart", "info", f"xray gen should be exposing, waited: {time}"
-                    )
-                    break
+            if self.is_calib_passed():
+                return total
+            
+            sleep(SLEEP_TIME)
+            total += i
 
             self._get_mu_state("exposure")
             self._get_gen_state("exposing")
-            total += i
+
+            if self.status_gen == "exposing" or self.status_mu == "exposure":
+                time = self.convert_seconds(i)
+                self.log(
+                    "smart", "info", f"xray gen should be exposing, waited: {time}"
+                )
+                break
             if self.app.app_state == "pause":
                 while self.app.app_state == "pause":
                     if self.app.app_state != "pause":
@@ -228,15 +231,21 @@ class Generic:
     def wait_exposure_end(self) -> int:
         total = 0
         for i in range(MAX_TIME_EXPOSURE):
-            sleep(SLEEP_TIME)
             self.endMessage(i)
 
             if self.is_calib_passed():
                 return total
 
+            sleep(SLEEP_TIME)
+            total += 1
+
             self._get_mu_state("blocked")
             self._get_gen_state("release")
-            total += 1
+
+            if self.status_gen == "release" or self.status_mu == "blocked":
+                time = self.convert_seconds(i)
+                self.log("smart", "info", f"end of exposure, waited: {time}")
+                break
 
             if self.app.app_state == "pause":
                 while self.app.app_state == "pause":
@@ -244,33 +253,17 @@ class Generic:
                         break
                     self.pauseMessage(i)
                     sleep(1)
+
             elif self.app.app_state == "stop":
                 self.abortMessage()
                 raise RuntimeError("Aborted requested")
 
-            elif self.status_gen == "release" or self.status_mu == "blocked":
-                time = self.convert_seconds(i)
-                self.log("smart", "info", f"end of exposure, waited: {time}")
-                break
-        return total
-
-    def wait_calib_pass(self) -> int:
-        total = 0
-        for i in range(MAX_TIME_EXPOSURE):
-            time = self.convert_seconds(i)
-            self.app.output_log.append(f"Waiting for PASS {time}")
-            sleep(SLEEP_TIME)
-            total = i
-            if self.is_calib_passed():
-                return total
-            elif self.app.app_state == "stop":
-                self.abortMessage()
-                raise RuntimeError("Aborted requested")
         return total
 
     def is_calib_passed(self) -> bool:
         self._get_mcu_state("pasar")
         self._get_mcu_state("saltar")
         if self.status_mcu == "pasar" or self.status_mcu == "saltar":
+            self.log("smart", "info", f"Calib passed")
             return True
         return False

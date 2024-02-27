@@ -13,7 +13,7 @@ class GUI(CTk):
     font_title: tuple[str, int, str] = ("Consolas", 18, "bold")
     font_text: tuple[str, int] = ("Consolas", 16)
     font_output: tuple[str, int] = ("Consolas", 13)
-    font_textbox: tuple[str, int] = ("Consolas", 11)
+    font_textbox: tuple[str, int] = ("Consolas", 12)
     from GUI.constants import tabs_list, class_option, level_option, control_option
 
     def __init__(self) -> None:
@@ -35,7 +35,7 @@ class GUI(CTk):
 
         super().__init__()  # type: ignore
         self.attributes("-topmost", True)  # type: ignore
-        self.geometry("960x440")  # type: ignore
+        self.geometry("980x440")  # type: ignore
         self.title("FPD Calibration bot")  # type: ignore
         self.resizable(False, False)  # type: ignore
         self.protocol("WM_DELETE_WINDOW", self.on_closing)  # type: ignore
@@ -55,10 +55,10 @@ class GUI(CTk):
         self.com = SerialCom(self)
 
         # GUI
-        self.grid_columnconfigure(0, weight=1, minsize=250)
-        self.grid_columnconfigure(1, weight=1, minsize=200)
+        self.grid_columnconfigure(0, weight=1, minsize=230)
+        self.grid_columnconfigure(1, weight=1, minsize=190)
         self.grid_columnconfigure(2, weight=1, minsize=100)
-        self.grid_columnconfigure(3, weight=1, minsize=250)
+        self.grid_columnconfigure(3, weight=1, minsize=300)
         self.rowconfigure(0, weight=1, minsize=90)
         self.rowconfigure(1, weight=1, minsize=90)
         self.rowconfigure(2, weight=1, minsize=120)

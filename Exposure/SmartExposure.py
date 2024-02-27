@@ -24,7 +24,7 @@ class SmartExposure:
         print("NO EXPOSURE CALIBRATION")
         total = 0
         try:
-            total += self.generic.wait_calib_pass()
+            total += self.generic.wait_calib_end()
             self.app.com.end()
             print("CALIB PASS")
         except RuntimeError:
@@ -88,21 +88,30 @@ class SmartExposure:
             try:
                 if self.app.app_state == "stop":
                     raise RuntimeError
-                print('exposures: ', exposures)
+
+                print("waiting for ready icon")
                 total += self.generic.wait_standby(count=exposures)
-                print(total)
                 self.app.vision.status_label.configure(text="Status: Standby")  # type: ignore
+
+                if self.generic.is_calib_passed():
+                    self.app.output_log.append("Calib Passed!")
+                    self.app.vision.status_label.configure(text="Status: Calib Pass")  # type: ignore
+                    break
+
                 self.app.com.start_short()
+                print("waiting for exposing icon")
                 total += self.generic.wait_exposure_start()
-                print(total)
                 self.app.vision.status_label.configure(text="Status: Under exposure")  # type: ignore
+
+                print("waiting for block icon")
                 total += self.generic.wait_exposure_end()
-                print(total)
                 self.app.vision.status_label.configure(text="Status: Blocked")  # type: ignore
                 exposures += 1
                 self.app.com.end()
+
                 if self.generic.is_calib_passed():
-                    self.app.vision.status_label.configure(text="Status: Calib passed")  # type: ignore
+                    self.app.output_log.append("Calib Passed!")
+                    self.app.vision.status_label.configure(text="Status: Calib Pass")  # type: ignore
                     break
 
             except RuntimeError:

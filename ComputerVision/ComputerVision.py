@@ -23,7 +23,6 @@ class ComputerVision:
             dir: keys = "status_gen"
         elif button in STATUS_MCU:
             dir: keys = "status_mcu"
-            confidence = 0.9
         elif button in STATUS_MU:
             dir: keys = "status_mu"
         try:
