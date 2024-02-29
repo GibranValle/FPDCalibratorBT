@@ -59,38 +59,26 @@ class SerialCom:
         res = self.write2Read(message)
         if res == message:
             return True
-        self.app.log("serial", "error", "Communication error")
-        raise ConnectionAbortedError("message was not responded")
+        self.app.log("serial", "error", "Message not responded")
+        return False
 
     def start_short(self):
         message = "S"
-        try:
-            if self.communicate(message):
-                return True
-            return False
-        except ConnectionAbortedError:
-            raise ConnectionAbortedError("message was not responded")
-        
+        return self.communicate(message)
+
     def start_long(self):
         message = "L"
-        try:
-            if self.communicate(message):
-                return True
-            return False
-        except ConnectionAbortedError:
-            raise ConnectionAbortedError("message was not responded")
+        if self.communicate(message):
+            return True
+        return False
 
     def end(self):
-        try:
-            if self.communicate("X"):
-                return True
-            return False
-        except ConnectionAbortedError:
-            raise ConnectionAbortedError("message was not responded")
+        return self.communicate("X")
 
-    def endListening(self):
+    def endListening(self) -> bool:
         try:
-            self.communicate("X")
+            if not self.communicate("X"):
+                return False
             self.offline = True
             self.isListening = False
             self.arduino.close()  # type: ignore
@@ -99,10 +87,12 @@ class SerialCom:
 
         except AttributeError:
             self.app.log("serial", "error", "Port not closed")
-            return
+            return False
         except NameError:
             self.app.log("serial", "error", "Port not closed")
-            return
+            return False
+        else:
+            return True
 
     def is_listening(self) -> bool:
         return self.isListening

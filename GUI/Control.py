@@ -89,7 +89,6 @@ class Control(CTk):
                 elif self.app.duration == "long":
                     Thread(target=self.app.manual.start_exposure, args=["long"]).start()
             elif self.app.mode == "FPD":
-                print("fpd")
                 Thread(target=self.app.smart.start_smart_exposure).start()
             elif self.app.mode == "mA":
                 Thread(target=self.app.smart.start_ma_exposure).start()

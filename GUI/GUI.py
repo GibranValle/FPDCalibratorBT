@@ -67,11 +67,11 @@ class GUI(CTk):
         self.toplevel_window: CTkToplevel
         self.expanded_window: CTkToplevel
         self.vision = Vision(self)
+        self.output_log = Log(self)  # type: ignore
         self.serial = Serial(self)  # type: ignore
         self.auxiliary = Auxiliary(self)
         self.modes = Mode(self)
         self.control = Control(self)
-        self.output_log = Log(self)  # type: ignore
 
         self.aws_interactor = AWSGen(self)
         self.mu_interactor = MU0(self)
@@ -81,13 +81,11 @@ class GUI(CTk):
         self.log("gui", "info", "Gui initialization completed")
 
     def on_closing(self, event: int = 0):
-        print("closing")
         try:
             self.com.endListening()
         except ConnectionError or ConnectionAbortedError:
             self.log("gui", "error", "error during closing port")
         finally:
-            print("destroying")
             self.destroy()
             sys.exit()
 

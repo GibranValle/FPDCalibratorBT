@@ -27,7 +27,6 @@ class Log(CTk):
         import re
 
         try:
-            print(self.app.expanded_window.winfo_exists())
             if self.app.expanded_window.winfo_exists():
                 self.app.expanded_window.update_message(text)  # type: ignore
         except:
@@ -37,7 +36,6 @@ class Log(CTk):
         else:
             self.log_label.configure(text_color="white", text="LOG")  # type: ignore
 
-        print(text)
         previousText = ""
         previousRaw = self.textbox.get("end-2l", "end")  # type: ignore
         previousMatch = re.search(r"(^\w.*):", previousRaw)

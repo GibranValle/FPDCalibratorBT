@@ -10,6 +10,7 @@ class Serial(CTk):
     def __init__(self, app: GUI):
         super().__init__()  # type: ignore
         self.frame_serial = CTkFrame(app, fg_color=BG_COLOR_1)
+        self.app = app
 
         self.label_serial = CTkLabel(
             self.frame_serial,
@@ -61,17 +62,27 @@ class Serial(CTk):
                 return
             else:
                 sleep(1.5)
+                if self.serial.is_offline():
+                    self.app.output_log.append("Error: USB no conectado")
+                    print("arduino not found!")
+                    return
+                
+                if not self.serial.communicate('T'):
+                    self.app.output_log.append("Error: Disparador no responde")
+                    print("arduino not responding!")
+                    return
+                
                 self.status_serial.configure(text="Online", text_color=OK_COLOR)  # type: ignore
                 self.button_serial.configure(text="Disconnect", fg_color=ERR_COLOR, hover_color=ERR_COLOR_HOVER)  # type: ignore
+                self.app.output_log.append("Disparador Online!")
+
         elif not self.serial.is_offline() and self.serial.is_listening():
             # close comm
-            try:
-                self.serial.endListening()
-            except ConnectionError:
+            if not self.serial.endListening():
                 return
-            else:
-                self.status_serial.configure(text="Online", text_color=ERR_COLOR_LIGHT)  # type: ignore
-                self.button_serial.configure(text="Connect", fg_color=OK_COLOR, hover_color=OK_COLOR_HOVER)  # type: ignore
+
+            self.status_serial.configure(text="Offline", text_color=ERR_COLOR_LIGHT)  # type: ignore
+            self.button_serial.configure(text="Connect", fg_color=OK_COLOR, hover_color=OK_COLOR_HOVER)  # type: ignore
 
     def show(self):
         self.frame_serial.grid(row=0, column=0, rowspan=2, sticky="NSEW", padx=(20, 10), pady=(20, 10))  # type: ignore
