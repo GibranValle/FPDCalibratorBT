@@ -50,7 +50,7 @@ tabs_list = Literal["manual", "semi", "auto"]
 push_option = Literal["push", "release"]
 exposure_option = Literal["short", "long"]
 class_option = Literal[
-    "manual", "semi", "auto", "serial", "gui", "smart", "mu0", "mcu0", "control"
+    "manual", "semi", "auto", "serial", "gui", "smart", "mu0", "mcu0", "control", "generic"
 ]
 level_option = Literal["info", "error", "warning", "success"]
 control_option = Literal["start", "pause", "stop", "continuos", "expand"]

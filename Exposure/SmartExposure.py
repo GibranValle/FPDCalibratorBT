@@ -28,7 +28,6 @@ class SmartExposure:
             self.app.com.end()
             print("CALIB PASS")
         except RuntimeError:
-            self.generic.abortMessage()
             return total
         return total
 
@@ -56,7 +55,6 @@ class SmartExposure:
             self.app.com.end()
 
         except RuntimeError:
-            self.generic.abortMessage()
             self.app.vision.status_label.configure(text="Status: Blocked")  # type: ignore
             return total
         self.generic.exposureMessage(total)
@@ -74,7 +72,6 @@ class SmartExposure:
             self.app.vision.status_label.configure(text="Status: Blocked")  # type: ignore
             self.app.com.end()
         except RuntimeError:
-            self.generic.abortMessage()
             self.app.vision.status_label.configure(text="Status: Blocked")  # type: ignore
             return total
         self.generic.exposureMessage(total)
@@ -89,8 +86,7 @@ class SmartExposure:
                 if self.app.app_state == "stop":
                     raise RuntimeError
 
-                print("waiting for ready icon")
-                total += self.generic.wait_standby(count=exposures)
+                total += self.generic.wait_standby(watchPass=True, count=exposures)
                 self.app.vision.status_label.configure(text="Status: Standby")  # type: ignore
 
                 if self.generic.is_calib_passed():
@@ -99,11 +95,9 @@ class SmartExposure:
                     break
 
                 self.app.com.start_short()
-                print("waiting for exposing icon")
                 total += self.generic.wait_exposure_start()
                 self.app.vision.status_label.configure(text="Status: Under exposure")  # type: ignore
 
-                print("waiting for block icon")
                 total += self.generic.wait_exposure_end()
                 self.app.vision.status_label.configure(text="Status: Blocked")  # type: ignore
                 exposures += 1
@@ -115,18 +109,21 @@ class SmartExposure:
                     break
 
             except RuntimeError:
-                self.generic.abortMessage()
                 self.app.vision.status_label.configure(text="Status: Blocked")  # type: ignore
                 self.app.control.action("stop")
                 break
-        self.generic.setExposureMessage(total, exposures)
-        self.app.control.action("stop")
-        return total
 
-    def start_auto_loop(self):
+        if self.app.app_state != "stop":
+            self.generic.setExposureMessage(total, exposures)
+            if self.app.mode != "auto":
+                self.app.control.action("stop")
+        return -1
+
+    def start_auto_loop(self) -> None:
         total = 0
         try:
             for calibration in self.app.selected_cal:
+
                 text = f"Initialization for {calibration} calib"
                 sleep(1)
                 total += 1
@@ -147,31 +144,37 @@ class SmartExposure:
                 self.app.log("control", "info", text)
 
                 text = f"FPD stabilization for {calibration} calib"
-                for i in range(4):
+                for i in range(7):
                     if self.app.app_state == "stop":
                         print(i)
                         raise ConnectionAbortedError
-                    sleep(1)
+                    sleep(0.5)
                 total += 3
 
+                self.generic.set_mcu_state("calibrating")
                 if calibration == "offset" or calibration == "defect":
                     total = self._start_smart_NO_exposure()
 
                 else:
                     total = self.start_smart_loop()
+                    print(total)
+                    if total == -1:
+                        raise ConnectionAbortedError
 
         except ConnectionAbortedError:
-            self.generic.abortMessage()
             self.app.control.action("stop")
+            return
 
         except AttributeError:
             self.generic.errorMessage()
             self.app.control.action("stop")
+            return
 
         except RuntimeError:
             self.generic.errorMessage()
             self.app.control.action("stop")
+            return
 
-        else:
-            self.app.control.action("stop")
-            self.generic.calibrationMessage(total)
+        self.app.control.action("stop")
+        self.generic.calibrationMessage(total)
+        return

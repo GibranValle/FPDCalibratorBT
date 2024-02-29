@@ -1,4 +1,4 @@
-from customtkinter import CTk, CTkFrame, CTkLabel, CTkTextbox, END  # type: ignore
+from customtkinter import CTk, CTkFrame, CTkLabel, CTkTextbox, END, CURRENT  # type: ignore
 from GUI.constants import *
 
 
@@ -24,6 +24,8 @@ class Log(CTk):
         self.show()
 
     def append(self, text: str) -> None:
+        import re
+
         try:
             print(self.app.expanded_window.winfo_exists())
             if self.app.expanded_window.winfo_exists():
@@ -34,8 +36,24 @@ class Log(CTk):
             self.log_label.configure(text_color=WARNING_COLOR, text="LOG ERROR!")  # type: ignore
         else:
             self.log_label.configure(text_color="white", text="LOG")  # type: ignore
-        self.textbox.insert(END, f"{text}\n")  # type: ignore
-        self.textbox.see(END)  # type: ignore
+
+        print(text)
+        previousText = ""
+        previousRaw = self.textbox.get("end-2l", "end")  # type: ignore
+        previousMatch = re.search(r"(^\w.*):", previousRaw)
+        if previousMatch != None:
+            previousText = previousMatch.group(0)
+
+        newText = "."
+        match = re.search(r"(^\w.*):", text)
+        if match != None:
+            newText = match.group(0)
+
+        if previousText == newText:
+            self.textbox.delete("end-2l", "end-1l")  # type: ignore
+
+        self.textbox.insert("end", f"{text}\n")  # type: ignore
+        self.textbox.see("end")  # type: ignore
 
     def show(self):
         self.frame_log.grid(row=2, column=3, rowspan=2, sticky="NSEW", padx=(10, 20), pady=(10, 20))  # type: ignore

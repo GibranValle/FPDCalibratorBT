@@ -99,22 +99,26 @@ class Generic:
         if x > 0 and y > 0:
             self.status_mcu = button
 
+    def set_mcu_state(self, button: status_mcu) -> None:
+        self.status_mcu = button
+
     def wait_calib_start(
         self,
         calibration: status_mcu,
-        exposure: int = 0,
+        exposure: int = 0
     ) -> int:
         if exposure > 0:
             return 0
         total = 0
+        pause = 0
         for i in range(MAX_TIME_STANDBY):
             sleep(SLEEP_TIME)
             self._get_mcu_state(calibration)
             if self.app.app_state == "pause":
                 while self.app.app_state == "pause":
-                    if self.app.app_state != "pause":
-                        break
-                    self.pauseMessage(i)
+                    sleep(1)
+                    pause += 1
+                    self.pauseMessage(pause)
             elif self.app.app_state == "stop":
                 self.abortMessage()
                 raise RuntimeError("Aborted requested")
@@ -134,12 +138,13 @@ class Generic:
         self,
     ) -> int:
         total = 0
+        pause = 0
         for i in range(MAX_TIME_STANDBY):
             time = self.convert_seconds(i)
             self.app.output_log.append(f"Waiting for calib PASS : {time}")
             sleep(SLEEP_TIME)
             total += i
-            
+
             if self.is_calib_passed():
                 time = self.convert_seconds(i)
                 self.log(
@@ -148,23 +153,24 @@ class Generic:
                 break
             if self.app.app_state == "pause":
                 while self.app.app_state == "pause":
-                    if self.app.app_state != "pause":
-                        break
-                    self.pauseMessage(i)
+                    sleep(1)
+                    pause += 1
+                    self.pauseMessage(pause)
             elif self.app.app_state == "stop":
                 self.abortMessage()
                 raise RuntimeError("Aborted requested")
         return total
 
-    def wait_standby(self, count: int = 0) -> int:
+    def wait_standby(self, watchPass: bool = False, count: int = 0) -> int:
         total = 0
+        pause = 0
         for i in range(MAX_TIME_STANDBY):
             self.standByMessage(i)
             sleep(SLEEP_TIME)
             total += 1
 
-            if count > 0:
-                if self.is_calib_passed():
+            if watchPass:
+                if self.is_calib_passed() and count > 0:
                     break
 
             if self.app.click_ok:
@@ -185,10 +191,9 @@ class Generic:
 
             if self.app.app_state == "pause":
                 while self.app.app_state == "pause":
-                    if self.app.app_state != "pause":
-                        break
                     sleep(1)
-                    self.pauseMessage(i)
+                    pause += 1
+                    self.pauseMessage(pause)
 
             elif self.app.app_state == "stop":
                 self.abortMessage()
@@ -198,13 +203,14 @@ class Generic:
 
     def wait_exposure_start(self) -> int:
         total = 0
+        pause = 0
         for i in range(MAX_TIME_BEFORE_EXPOSURE):
             self.startMessage(i)
 
             if self.is_calib_passed():
                 return total
-            
-            sleep(SLEEP_TIME)
+
+            sleep(SLEEP_TIME / 2)
             total += i
 
             self._get_mu_state("exposure")
@@ -216,47 +222,53 @@ class Generic:
                     "smart", "info", f"xray gen should be exposing, waited: {time}"
                 )
                 break
+
             if self.app.app_state == "pause":
                 while self.app.app_state == "pause":
                     if self.app.app_state != "pause":
                         break
                     sleep(1)
-                    self.pauseMessage(i)
+                    pause += 1
+                    self.pauseMessage(pause)
             elif self.app.app_state == "stop":
                 self.abortMessage()
                 raise RuntimeError("Aborted requested")
+
+            sleep(SLEEP_TIME / 2)
 
         return total
 
     def wait_exposure_end(self) -> int:
         total = 0
+        pause = 0
         for i in range(MAX_TIME_EXPOSURE):
             self.endMessage(i)
 
+            sleep(SLEEP_TIME / 2)
+            total += 1
+
             if self.is_calib_passed():
                 return total
-
-            sleep(SLEEP_TIME)
-            total += 1
 
             self._get_mu_state("blocked")
             self._get_gen_state("release")
 
             if self.status_gen == "release" or self.status_mu == "blocked":
                 time = self.convert_seconds(i)
-                self.log("smart", "info", f"end of exposure, waited: {time}")
+                self.log("generic", "info", f"end of exposure, waited: {time}")
                 break
 
             if self.app.app_state == "pause":
                 while self.app.app_state == "pause":
-                    if self.app.app_state != "pause":
-                        break
-                    self.pauseMessage(i)
                     sleep(1)
+                    pause += 1
+                    self.pauseMessage(pause)
 
             elif self.app.app_state == "stop":
                 self.abortMessage()
                 raise RuntimeError("Aborted requested")
+
+            sleep(SLEEP_TIME / 2)
 
         return total
 
