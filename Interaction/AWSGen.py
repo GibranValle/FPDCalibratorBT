@@ -32,38 +32,34 @@ class AWSGen(Interaction):
         validation = self._click_icon_aws("ok")
         if not validation:
             return validation
-        self.app.log("gui", "info", "AWS ok button pushed")
-        self.app.output_log.append("AWS ok button pushed")
+        self.app.file_log("gui", "info", "AWS ok button pushed")
         return validation
 
     def click_calib_button(self) -> bool:
         validation = self._click_icon_aws("calib")
         if not validation:
-            print("AWS calib button not pushed")
-            self.app.output_log.append("AWS calib button not pushed")
-            self.app.log("gui", "error", "AWS calib button not pushed")
+            self.app.window_log("AWS calib button not pushed")
+            self.app.file_log("gui", "error", "AWS calib button not pushed")
             return validation
-        self.app.log("gui", "info", "AWS calib button pushed")
-        self.app.output_log.append("AWS calib button pushed")
+        self.app.file_log("gui", "info", "AWS calib button pushed")
         return validation
 
     def click_field_button(self) -> bool:
         validation = self._click_icon_aws("field_calibration")
         if not validation:
-            self.app.output_log.append("AWS field calib button not pushed")
-            self.app.log("gui", "error", "AWS field calib button not pushed")
+            self.app.window_log("AWS field calib button not pushed")
+            self.app.file_log("gui", "error", "AWS field calib button not pushed")
             return validation
-        self.app.log("gui", "info", "AWS field calib button pushed")
-        self.app.output_log.append("AWS field calib button pushed")
+        self.app.file_log("gui", "info", "AWS field calib button pushed")
         return validation
 
     def enable_FPD_calib(self) -> bool:
         validation = self.click_calib_button()
         validation = validation and self.click_field_button()
         if not validation:
-            self.app.log("gui", "error", "FPD calibration not enabled")
+            self.app.file_log("gui", "error", "FPD calibration not enabled")
             return validation
-        self.app.log("gui", "info", "FPD calibration enabled")
+        self.app.file_log("gui", "info", "FPD calibration enabled")
         return validation
 
     def openRU(self) -> None:
@@ -77,10 +73,10 @@ class AWSGen(Interaction):
             self._changeWindow("FF_Generator_Tool")
             return True
         if self._openApp("FF_Generator_Tool_v1_00_10.exe"):
-            self.app.log("mcu0", "error", "RUPCTools not installed")
+            self.app.file_log("mcu0", "error", "RUPCTools not installed")
             return True
-        self.app.output_log.append("Error: FF_Generator_Tool\nnot installed")
-        self.app.log("mcu0", "error", "FF_Generator_Tool not installed")
+        self.app.window_log("Error: FF_Generator_Tool\nnot installed")
+        self.app.file_log("mcu0", "error", "FF_Generator_Tool not installed")
         return False
 
     def closeRU(self):

@@ -52,7 +52,7 @@ class Serial(CTk):
         self.button_serial.grid(row=2, column=0, padx=10, sticky="NSEW", pady=(0, 5), columnspan=2)  # type: ignore
         self.show()
 
-    def toggle_serial(self):
+    def toggle_serial(self) -> None:
         if self.serial.is_offline() and not self.serial.is_listening():
             # stablish communication
             try:
@@ -63,18 +63,18 @@ class Serial(CTk):
             else:
                 sleep(1.5)
                 if self.serial.is_offline():
-                    self.app.output_log.append("Error: USB no conectado")
+                    self.app.window_log("Error: USB no conectado")
                     print("arduino not found!")
                     return
                 
                 if not self.serial.communicate('T'):
-                    self.app.output_log.append("Error: Disparador no responde")
+                    self.app.window_log("Error: Disparador no responde")
                     print("arduino not responding!")
                     return
                 
                 self.status_serial.configure(text="Online", text_color=OK_COLOR)  # type: ignore
                 self.button_serial.configure(text="Disconnect", fg_color=ERR_COLOR, hover_color=ERR_COLOR_HOVER)  # type: ignore
-                self.app.output_log.append("Disparador Online!")
+                self.app.window_log("Disparador Online!")
 
         elif not self.serial.is_offline() and self.serial.is_listening():
             # close comm

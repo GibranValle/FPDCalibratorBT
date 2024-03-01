@@ -76,7 +76,7 @@ class Interaction:
                 args = ""
                 subprocess.Popen(route + exe + args)
                 print("Interactor - openin RUPCTOOL")
-                self.app.log("gui", "info", "RUPCTOOL opening...")
+                self.app.file_log("gui", "info", "RUPCTOOL opening...")
 
             elif appName == "MU":
                 route = "C:\\Program Files\\FujiFilm\\FCR\\TOOL\\MUTL\\"
@@ -84,7 +84,7 @@ class Interaction:
                 args = " /IP:192.168.0.100 /RUNAME:MU0 /TYPE:FDR-2500A"
                 subprocess.Popen(route + exe + args)
                 print("Interactor - openin MU")
-                self.app.log("gui", "info", "MU opening...")
+                self.app.file_log("gui", "info", "MU opening...")
 
             elif appName == "MCU":
                 route = "C:\\Program Files\\FujiFilm\\FCR\\TOOL\\MUTL\\"
@@ -92,7 +92,7 @@ class Interaction:
                 args = " /IP:192.168.0.101 /RUNAME:MCU0 /TYPE:FDR-3000DRL /FCR:C:\\Program Files\\FujiFilm\\FCR\\"
                 subprocess.Popen(route + exe + args)
                 print("Interactor - openin MCU")
-                self.app.log("gui", "info", "MCU opening...")
+                self.app.file_log("gui", "info", "MCU opening...")
 
             elif appName == "FF_Generator_Tool_v1_00_10.exe":
                 route = "C:\\Program Files\\FujiFilm\\FF_Generator_Tool\\"
@@ -101,15 +101,15 @@ class Interaction:
                 args = ""  # type: ignore
                 subprocess.Popen(route + exe + args)
                 print("Interactor - openin FF")
-                self.app.log("gui", "info", "FF opening...")
+                self.app.file_log("gui", "info", "FF opening...")
 
         except FileNotFoundError:
             print("Interactor - file not found")
-            self.app.log("gui", "error", "File not found")
+            self.app.file_log("gui", "error", "File not found")
             return False
         except OSError:
             print("Interactor - program not installed")
-            self.app.log("gui", "error", "program not installed found")
+            self.app.file_log("gui", "error", "program not installed found")
             return False
         else:
             sleep(1)
@@ -126,7 +126,7 @@ class Interaction:
             print("Interactor - closed app")
             sleep(1)
             return
-        self.app.log("gui", "error", "Nothing closed")
+        self.app.file_log("gui", "error", "Nothing closed")
 
     def _scanWindows():  # type: ignore
         file = open("windowNames.txt", "w")

@@ -71,14 +71,14 @@ class Control(CTk):
     def action(self, button: control_option) -> None:
         if button == "start":
             if self.app.mode == "auto":
-                self.app.output_log.append("Error: Usar botón continuo")
-                self.app.log("control", "error", "Favor de utilizar botón continuo!")
+                self.app.window_log("Error: Usar botón continuo")
+                self.app.file_log("control", "error", "Favor de utilizar botón continuo!")
                 return
 
             if self.app.app_state == "pause":
                 self.app.change_app_state(button)
-                self.app.output_log.append("Request resume...")
-                self.app.log("control", "info", "Request resume...")
+                self.app.window_log("Request resume...")
+                self.app.file_log("control", "info", "Request resume...")
                 return
 
             self.app.change_app_state(button)
@@ -112,15 +112,15 @@ class Control(CTk):
 
             elif self.app.mode == "auto":
                 if self.app.current_calib == "None":
-                    self.app.output_log.append("Error: Select calibration from list")
-                    self.app.log("control", "warning", "Select calibration from list")
+                    self.app.window_log("Error: Select calibration from list")
+                    self.app.file_log("control", "warning", "Select calibration from list")
                     return
                 self.app.change_app_state(button)
                 Thread(target=self.app.smart.start_auto_loop).start()
 
             elif self.app.mode == "mA":
-                self.app.output_log.append("Error: Usar botón start")
-                self.app.log("auto", "error", "Favor de utilizar botón start!")
+                self.app.window_log("Error: Usar botón start")
+                self.app.file_log("auto", "error", "Favor de utilizar botón start!")
                 return
 
             self.update_buttons(button)

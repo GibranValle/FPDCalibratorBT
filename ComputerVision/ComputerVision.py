@@ -8,9 +8,6 @@ fraction = Literal["1/4", "1/2", "3/4"]
 
 class ComputerVision:
     def __init__(self):
-        self.status_mu: status_mu = "offline"
-        self.status_mcu: status_mcu = "offline"
-        self.status_gen: status_gen = "idle"
         self.image_repository = image_repository
 
     def get_status(

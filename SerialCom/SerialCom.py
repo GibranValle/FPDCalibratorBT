@@ -21,15 +21,15 @@ class SerialCom:
         try:
             self.arduino = self.advancedSerialInit()
         except ConnectionError:
-            self.app.log("serial", "error", "Arduino not found")
+            self.app.file_log("serial", "error", "Arduino not found")
             return
         self.isListening = True
         self.offline = False
 
-        self.app.log("serial", "info", "Serial connection established")
+        self.app.file_log("serial", "info", "Serial connection established")
         while self.isListening:
             if not self.arduino.isOpen():  # type: ignore
-                self.app.log("serial", "error", "Arduino is no longer connected")
+                self.app.file_log("serial", "error", "Arduino is no longer connected")
                 raise ConnectionError("Arduino is no longer connected")
             # data to send
             if self.buffer != "":
@@ -52,14 +52,14 @@ class SerialCom:
         :arg: "L" for long exposure - mA calibration only
         """
         if self.offline:
-            self.app.log("serial", "warning", "Working in offline mode")
+            self.app.file_log("serial", "warning", "Working in offline mode")
             return True
 
         print("message to send", message)
         res = self.write2Read(message)
         if res == message:
             return True
-        self.app.log("serial", "error", "Message not responded")
+        self.app.file_log("serial", "error", "Message not responded")
         return False
 
     def start_short(self):
@@ -83,13 +83,13 @@ class SerialCom:
             self.isListening = False
             self.arduino.close()  # type: ignore
             time.sleep(2)
-            self.app.log("serial", "info", "Port closed")
+            self.app.file_log("serial", "info", "Port closed")
 
         except AttributeError:
-            self.app.log("serial", "error", "Port not closed")
+            self.app.file_log("serial", "error", "Port not closed")
             return False
         except NameError:
-            self.app.log("serial", "error", "Port not closed")
+            self.app.file_log("serial", "error", "Port not closed")
             return False
         else:
             return True

@@ -15,27 +15,27 @@ class MCU0(Interaction):
     def open_MUTL_MCU(self) -> bool:
         if self._process_exists("MUTL.exe"):
             self._changeWindow("MCU0")
-            self.app.log("mcu0", "info", "Program exists changing window")
+            self.app.file_log("mcu0", "info", "Program exists changing window")
             return True
         if self._openApp("MCU"):
-            self.app.log("mcu0", "error", "RUPCTools not installed")
+            self.app.file_log("mcu0", "error", "RUPCTools not installed")
             return True
-        self.app.output_log.append("Error: RUPCTools \nnot installed")
-        self.app.log("mcu0", "error", "RUPCTools not installed")
+        self.app.window_log("Error: RUPCTools \nnot installed")
+        self.app.file_log("mcu0", "error", "RUPCTools not installed")
         return False
 
     def _click_cal_opt_tab(self):
         # check if already selected
         x, y = self.cv.get_icon_coords("cal_opt_selected")
         if x > 0 and y > 0:
-            self.app.log("mcu0", "info", "calibration opt already selected returning")
+            self.app.file_log("mcu0", "info", "calibration opt already selected returning")
             print("calibration opt already selected returning")
             return True
 
         # check if page 1
         x, y, w, h = self.cv.get_icon_all_coords("mcub")
         if x > 0 and y > 0:
-            self.app.log("mcu0", "info", "page 1 found, clicking cal opt tab")
+            self.app.file_log("mcu0", "info", "page 1 found, clicking cal opt tab")
             print("page 1 found, clicking cal opt tab")
             x, y = self._get_fraction_point(x, y, w, h, "3/4")
             self._click_point(x, y)
@@ -44,7 +44,7 @@ class MCU0(Interaction):
         # check if cal selected
         x, y, w, h = self.cv.get_icon_all_coords("cal_selected")
         if x > 0 and y > 0:
-            self.app.log("mcu0", "info", "page 1 found, clicking cal opt tab")
+            self.app.file_log("mcu0", "info", "page 1 found, clicking cal opt tab")
             print("page 1 found, clicking cal opt tab")
             x, y = self._get_fraction_point(x, y, w, h, "3/4")
             print(x, y)
@@ -54,22 +54,22 @@ class MCU0(Interaction):
         # check if page 0
         x, y = self.cv.get_icon_coords("mcua")
         if x > 0 and y > 0:
-            self.app.log("mcu0", "info", "page 0 found")
+            self.app.file_log("mcu0", "info", "page 0 found")
             print("page 0 found")
             x, y, w, h = self.cv.get_icon_all_coords("only_right")
             if x > 0 and y > 0:
                 x, y = self._get_fraction_point(x, y, w, h, "3/4")
-                self.app.log("mcu0", "info", "arrow found")
+                self.app.file_log("mcu0", "info", "arrow found")
                 print("arrow found... clicking")
                 self._click_point(x, y)
                 x, y, w, h = self.cv.get_icon_all_coords("mcub")
                 if x > 0 and y > 0:
-                    self.app.log("mcu0", "info", "page 1 found, clicking cal opt tab")
+                    self.app.file_log("mcu0", "info", "page 1 found, clicking cal opt tab")
                     print("page 1 found, clicking cal opt tab")
                     x, y = self._get_fraction_point(x, y, w, h, "3/4")
                     self._click_point(x, y)
                     return True
-        self.app.log("mcu0", "error", "Calibration opt tab not visible")
+        self.app.file_log("mcu0", "error", "Calibration opt tab not visible")
         print("Calibration opt tab not visible")
         return False
 
@@ -83,7 +83,7 @@ class MCU0(Interaction):
         # check if page 1
         x, y, w, h = self.cv.get_icon_all_coords("mcub")
         if x > 0 and y > 0:
-            self.app.log("mcu0", "info", "page 1 found, clicking cal tab")
+            self.app.file_log("mcu0", "info", "page 1 found, clicking cal tab")
             print("page 1 found, clicking cal tab")
             x, y = self._get_fraction_point(x, y, w, h, "1/2")
             self._click_point(x, y)
@@ -92,7 +92,7 @@ class MCU0(Interaction):
         # check if calibration selected
         x, y, w, h = self.cv.get_icon_all_coords("cal_opt_selected")
         if x > 0 and y > 0:
-            self.app.log("mcu0", "info", "page 1 found, clicking cal tab")
+            self.app.file_log("mcu0", "info", "page 1 found, clicking cal tab")
             print("page 1 found, clicking cal tab")
             x, y = self._get_fraction_point(x, y, w, h, "1/2")
             print(x, y)
@@ -102,22 +102,22 @@ class MCU0(Interaction):
         # check if page 0
         x, y = self.cv.get_icon_coords("mcua")
         if x > 0 and y > 0:
-            self.app.log("mcu0", "info", "page 0 found")
+            self.app.file_log("mcu0", "info", "page 0 found")
             print("page 0 found")
             x, y, w, h = self.cv.get_icon_all_coords("only_right")
             if x > 0 and y > 0:
                 x, y = self._get_fraction_point(x, y, w, h, "3/4")
-                self.app.log("mcu0", "info", "arrow found")
+                self.app.file_log("mcu0", "info", "arrow found")
                 print("arrow found... clicking")
                 self._click_point(x, y)
                 x, y, w, h = self.cv.get_icon_all_coords("mcub")
                 if x > 0 and y > 0:
-                    self.app.log("mcu0", "info", "page 1 found, clicking cal tab")
+                    self.app.file_log("mcu0", "info", "page 1 found, clicking cal tab")
                     print("page 1 found, clicking cal tab")
                     x, y = self._get_fraction_point(x, y, w, h, "1/2")
                     self._click_point(x, y)
                     return True
-        self.app.log("mcu0", "error", "Calibration tab not visible")
+        self.app.file_log("mcu0", "error", "Calibration tab not visible")
         print("Cal tab not visible")
         return False
 
@@ -126,13 +126,13 @@ class MCU0(Interaction):
         try:
             if self.open_MUTL_MCU():
                 text = "MUTL Opened"
-                self.app.output_log.append(text)
-                self.app.log("mcu0", "success", text)
+                self.app.window_log(text)
+                self.app.file_log("mcu0", "success", text)
             else:
                 if online:
                     text = "Error: MUTL could not be opened, Retry"
-                    self.app.output_log.append(text)
-                    self.app.log("mcu0", "error", text)
+                    self.app.window_log(text)
+                    self.app.file_log("mcu0", "error", text)
                     raise RuntimeError("Error: CALIBRATION TAB NOT VISIBLE")
         except RuntimeError:
             return False
@@ -141,8 +141,8 @@ class MCU0(Interaction):
             if button in MCU:
                 if self._click_cal_tab():
                     text = "Calibration tab clicked"
-                    self.app.output_log.append(text)
-                    self.app.log("mcu0", "error", text)
+                    self.app.window_log(text)
+                    self.app.file_log("mcu0", "error", text)
                 else:
                     raise RuntimeError("Error: CALIBRATION TAB NOT VISIBLE")
 
@@ -150,8 +150,8 @@ class MCU0(Interaction):
                 print("calib optional")
                 if self._click_cal_opt_tab():
                     text = "Calibration Opt tab clicked"
-                    self.app.output_log.append(text)
-                    self.app.log("mcu0", "error", text)
+                    self.app.window_log(text)
+                    self.app.file_log("mcu0", "error", text)
                 else:
                     raise RuntimeError("Error: CALIBRATION TAB NOT VISIBLE")
         except RuntimeError:
@@ -163,13 +163,13 @@ class MCU0(Interaction):
             if x > 0 and y > 0:
                 self._click_point(x, y)
                 text = f"{button} button clicked"
-                self.app.output_log.append(text)
-                self.app.log("mcu0", "success", text)
+                self.app.window_log(text)
+                self.app.file_log("mcu0", "success", text)
                 return True
 
             text = f"Error: {button} button not clicked"
-            self.app.output_log.append(text)
-            self.app.log("mcu0", "error", text)
+            self.app.window_log(text)
+            self.app.file_log("mcu0", "error", text)
             raise RuntimeError("Error: CALIBRATION TAB NOT VISIBLE")
         except RuntimeError:
             return False

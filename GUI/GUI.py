@@ -2,6 +2,7 @@ from customtkinter import CTk, CTkToplevel, set_appearance_mode, set_default_col
 import sys
 from GUI.constants import *
 from os import getcwd
+from ComputerVision.cv_types import *
 
 
 class GUI(CTk):
@@ -14,15 +15,13 @@ class GUI(CTk):
     font_text: tuple[str, int] = ("Consolas", 16)
     font_output: tuple[str, int] = ("Consolas", 13)
     font_textbox: tuple[str, int] = ("Consolas", 12)
-    from GUI.constants import tabs_list, class_option, level_option, control_option
 
     def __init__(self) -> None:
         # use import inside constructor to avoid circular import
         from GUI.Serial import Serial
         from SerialCom.SerialCom import SerialCom
-        from GUI.constants import control_option
         from GUI.Auxiliary import Auxiliary
-        from GUI.Vision import Vision
+        from GUI.StatusBox import StatusBox
         from GUI.Control import Control
         from GUI.Log import Log
         from Logger.Logger import Logger
@@ -32,6 +31,8 @@ class GUI(CTk):
         from Interaction.AWSGen import AWSGen
         from Interaction.MCU0 import MCU0
         from Interaction.MU0 import MU0
+        from GUI.Messenger import Messenger
+        from Exposure.Watcher import Watcher
 
         super().__init__()  # type: ignore
         self.attributes("-topmost", True)  # type: ignore
@@ -40,10 +41,13 @@ class GUI(CTk):
         self.resizable(False, False)  # type: ignore
         self.protocol("WM_DELETE_WINDOW", self.on_closing)  # type: ignore
         self.lower()
-        self.logger = Logger()
 
         # states
         self.app_state: control_option = "stop"
+        self.state_mcu: status_mcu = "offline"
+        self.state_mu: status_mu = "blocked"
+        self.state_gen: status_gen = "idle"
+
         self.duration: dur_option = "short"
         self.mode: mode_option = "FPD"
         self.click_ok: ok_option = "on"
@@ -63,11 +67,17 @@ class GUI(CTk):
         self.rowconfigure(1, weight=1, minsize=90)
         self.rowconfigure(2, weight=1, minsize=120)
         self.rowconfigure(3, weight=1, minsize=60)
+
+        #MESSAGE COMPONENTS
+        self.logger = Logger()
+        self.output_log = Log(self)  # type: ignore
+        self.statusBox = StatusBox(self)
+        self.messenger = Messenger(self)
+        self.watcher = Watcher(self)
+
         # GUI COMPONENTS
         self.toplevel_window: CTkToplevel
         self.expanded_window: CTkToplevel
-        self.vision = Vision(self)
-        self.output_log = Log(self)  # type: ignore
         self.serial = Serial(self)  # type: ignore
         self.auxiliary = Auxiliary(self)
         self.modes = Mode(self)
@@ -78,19 +88,19 @@ class GUI(CTk):
         self.mcu_interactor = MCU0(self)
         self.smart = SmartExposure(self)
         self.manual = ManualExposure(self)
-        self.log("gui", "info", "Gui initialization completed")
+        self.file_log("gui", "info", "Gui initialization completed")
 
     def on_closing(self, event: int = 0):
         try:
             self.com.endListening()
         except ConnectionError or ConnectionAbortedError:
-            self.log("gui", "error", "error during closing port")
+            self.file_log("gui", "error", "error during closing port")
         finally:
             self.destroy()
             sys.exit()
 
     def change_current_calib(self, calib: str):
-        self.vision.current_calib.configure(text=calib)  # type: ignore
+        self.statusBox.current_calib.configure(text=calib)  # type: ignore
 
     def toggle_select_button(self):
         if self.mode != "auto":
@@ -129,5 +139,27 @@ class GUI(CTk):
     def change_app_state(self, state: control_option) -> None:
         self.app_state = state
 
-    def log(self, _class: class_option, level: level_option, note: str) -> None:
+    def set_state_mcu(self, state: status_mcu) -> None:
+        self.state_mcu = state
+
+    def get_state_mcu(self):
+        return self.state_mcu
+
+    def set_state_mu(self, state: status_mu) -> None:
+        self.state_mu = state
+
+    def get_state_mu(self):
+        return self.state_mu
+
+    def set_state_gen(self, state: status_gen) -> None:
+        self.state_gen = state
+
+    def get_state_gen(self):
+        return self.state_gen
+
+    def file_log(self, _class: class_option, level: level_option, note: str) -> None:
         self.logger.append(_class, level, note)
+
+    def window_log(self, text: str) -> None:
+        self.output_log.append(text)
+

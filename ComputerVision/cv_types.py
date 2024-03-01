@@ -90,8 +90,8 @@ STATUS_MCU: list[status_mcu] = [
     "saltar",
     "calibrating",
 ]
-status_mu = Literal["blocked", "exposure", "offline", "standby"]
-STATUS_MU: list[status_mu] = ["blocked", "exposure", "offline", "standby"]
+status_mu = Literal["blocked", "exposure", "standby"]
+STATUS_MU: list[status_mu] = ["blocked", "exposure", "standby"]
 keys = Literal[
     "aws",
     "gen",

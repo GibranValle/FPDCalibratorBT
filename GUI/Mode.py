@@ -117,7 +117,7 @@ class Mode(CTk):
                 self.button_auto_select.configure(text_color="white")  # type: ignore
                 self.app.toggle_select_button()
         self.update()
-        self.app.vision.update()
+        self.app.statusBox.update()
 
     def update(self) -> None:
         if self.app.duration == "short":
