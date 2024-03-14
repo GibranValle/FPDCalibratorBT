@@ -20,8 +20,8 @@ class SmartExposure:
         return total
 
     def start_timer(self) -> int:
-        total = 10
-        for i in range(total, 0, -1):
+        total = 5
+        for i in range(total, -1, -1):
             sleep(1)
             self.app.messenger.timerMessage(i)
             if self.app.app_state == "stop":
@@ -31,19 +31,19 @@ class SmartExposure:
     def start_ma_exposure(self) -> int:
         total = 0
         try:
-            self.app.statusBox.status_mu_label.configure(text="Status: Countdown")  # type: ignore
+            self.app.statusBox.status_gen_label.configure(text="Gen: Countdown")  # type: ignore
             total = self.start_timer()
             total += self.app.watcher.wait_standby()
-            self.app.statusBox.status_mu_label.configure(text="Status: Standby")  # type: ignore
+            self.app.statusBox.status_gen_label.configure(text="Gen: Standby")  # type: ignore
             self.app.com.start_long()
-            total += self.app.watcher.wait_exposure_start()
-            self.app.statusBox.status_mu_label.configure(text="Status: Under exposure")  # type: ignore
-            total += self.app.watcher.wait_exposure_end()
-            self.app.statusBox.status_mu_label.configure(text="Status: Blocked")  # type: ignore
+            total += self.app.watcher.wait_ma_exposure_start()
+            self.app.statusBox.status_gen_label.configure(text="Gen: Under exposure")  # type: ignore
+            total += self.app.watcher.wait_ma_exposure_end()
+            self.app.statusBox.status_gen_label.configure(text="Gen: Blocked")  # type: ignore
             self.app.com.end()
 
         except RuntimeError:
-            self.app.statusBox.status_mu_label.configure(text="Status: Blocked")  # type: ignore
+            self.app.statusBox.status_gen_label.configure(text="Gen: Blocked")  # type: ignore
             return total
         self.app.messenger.exposureMessage(total)
         self.app.control.action("stop")
@@ -53,14 +53,14 @@ class SmartExposure:
         total = 0
         try:
             total += self.app.watcher.wait_standby()
-            self.app.statusBox.status_mu_label.configure(text="Status: Standby")  # type: ignore
+            self.app.statusBox.status_mu_label.configure(text="MU: Standby")  # type: ignore
             self.app.com.start_short()
-            self.app.statusBox.status_mu_label.configure(text="Status: Under exposure")  # type: ignore
+            self.app.statusBox.status_mu_label.configure(text="MU: Under exposure")  # type: ignore
             total += self.app.watcher.wait_exposure_end()
-            self.app.statusBox.status_mu_label.configure(text="Status: Blocked")  # type: ignore
+            self.app.statusBox.status_mu_label.configure(text="MU: Blocked")  # type: ignore
             self.app.com.end()
         except RuntimeError:
-            self.app.statusBox.status_mu_label.configure(text="Status: Blocked")  # type: ignore
+            self.app.statusBox.status_mu_label.configure(text="MU: Blocked")  # type: ignore
             return total
         self.app.messenger.exposureMessage(total)
         self.app.control.action("stop")
@@ -77,29 +77,29 @@ class SmartExposure:
                     raise RuntimeError
 
                 total += self.app.watcher.wait_standby(watchPass=True, count=exposures)
-                self.app.statusBox.status_mu_label.configure(text="Status: Standby")  # type: ignore
+                self.app.statusBox.status_mu_label.configure(text="MU: Standby")  # type: ignore
 
                 if self.app.watcher.is_calib_passed():
                     self.app.window_log("Calib Passed!")
-                    self.app.statusBox.status_mu_label.configure(text="Status: Calib Pass")  # type: ignore
+                    self.app.statusBox.status_mu_label.configure(text="MU: Calib Pass")  # type: ignore
                     break
 
                 self.app.com.start_short()
                 total += self.app.watcher.wait_exposure_start()
-                self.app.statusBox.status_mu_label.configure(text="Status: Under exposure")  # type: ignore
+                self.app.statusBox.status_mu_label.configure(text="MU: Under exposure")  # type: ignore
 
                 total += self.app.watcher.wait_exposure_end()
-                self.app.statusBox.status_mu_label.configure(text="Status: Blocked")  # type: ignore
+                self.app.statusBox.status_mu_label.configure(text="MU: Blocked")  # type: ignore
                 exposures += 1
                 self.app.com.end()
 
                 if self.app.watcher.is_calib_passed():
                     self.app.window_log("Calib Passed!")
-                    self.app.statusBox.status_mu_label.configure(text="Status: Calib Pass")  # type: ignore
+                    self.app.statusBox.status_mu_label.configure(text="MU: Calib Pass")  # type: ignore
                     break
 
             except RuntimeError:
-                self.app.statusBox.status_mu_label.configure(text="Status: Blocked")  # type: ignore
+                self.app.statusBox.status_mu_label.configure(text="MU: Blocked")  # type: ignore
                 self.app.control.action("stop")
                 break
 

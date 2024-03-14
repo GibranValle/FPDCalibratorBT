@@ -109,12 +109,44 @@ class Watcher:
             total += i
 
             self._view_mu_state("exposure")
+
+            if self.app.get_state_mu() == "exposure":
+                time = Messenger.convert_seconds(i)
+                self.app.file_log(
+                    "smart", "info", f"xray gen should be exposing, waited: {time}"
+                )
+                break
+
+            if self.app.app_state == "pause":
+                while self.app.app_state == "pause":
+                    if self.app.app_state != "pause":
+                        break
+                    sleep(1)
+                    pause += 1
+                    self.app.messenger.pauseMessage(pause)
+            elif self.app.app_state == "stop":
+                self.app.messenger.abortMessage()
+                raise RuntimeError("Aborted requested")
+
+            sleep(SLEEP_TIME / 2)
+
+        return total
+
+    def wait_ma_exposure_start(self) -> int:
+        total = 0
+        pause = 0
+        for i in range(MAX_TIME_BEFORE_EXPOSURE):
+            self.app.messenger.startMessage(i)
+
+            if self.is_calib_passed():
+                return total
+
+            sleep(SLEEP_TIME / 2)
+            total += i
+
             self._view_gen_state("exposing")
 
-            if (
-                self.app.get_state_gen() == "exposing"
-                or self.app.get_state_mu() == "exposure"
-            ):
+            if self.app.get_state_gen() == "exposing":
                 time = Messenger.convert_seconds(i)
                 self.app.file_log(
                     "smart", "info", f"xray gen should be exposing, waited: {time}"
@@ -151,10 +183,40 @@ class Watcher:
             self._view_mu_state("blocked")
             self._view_gen_state("release")
 
-            if (
-                self.app.get_state_gen() == "release"
-                or self.app.get_state_mu() == "blocked"
-            ):
+            if self.app.get_state_mu() == "blocked":
+                time = Messenger.convert_seconds(i)
+                self.app.file_log("watcher", "info", f"end of exposure, waited: {time}")
+                break
+
+            if self.app.app_state == "pause":
+                while self.app.app_state == "pause":
+                    sleep(1)
+                    pause += 1
+                    self.app.messenger.pauseMessage(pause)
+
+            elif self.app.app_state == "stop":
+                self.app.messenger.abortMessage()
+                raise RuntimeError("Aborted requested")
+
+            sleep(SLEEP_TIME / 2)
+
+        return total
+
+    def wait_ma_exposure_end(self) -> int:
+        total = 0
+        pause = 0
+        for i in range(MAX_TIME_EXPOSURE):
+            self.app.messenger.endMessage(i)
+
+            sleep(SLEEP_TIME / 2)
+            total += 1
+
+            if self.is_calib_passed():
+                return total
+
+            self._view_gen_state("release")
+
+            if self.app.get_state_gen() == "release":
                 time = Messenger.convert_seconds(i)
                 self.app.file_log("watcher", "info", f"end of exposure, waited: {time}")
                 break
