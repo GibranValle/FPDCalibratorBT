@@ -31,7 +31,10 @@ class ComputerVision:
 
     def get_icon_coords(self, button: all_buttons) -> tuple[int, int]:
         dir: keys = "aws"
+        confidence = 0.90
+
         if button in AWS:
+            confidence = 0.93
             dir: keys = "aws"
         elif button in GEN:
             dir: keys = "gen"
@@ -55,7 +58,6 @@ class ComputerVision:
             dir: keys = "ru"
         path: str = self.image_repository[dir][button]
         try:
-            confidence = 0.95
             x, y = locateCenterOnScreen(path, confidence=confidence)  # type: ignore
             return x, y  # type: ignore
         except TypeError:
