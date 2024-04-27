@@ -12,17 +12,24 @@ class DirectoryManager:
 
         with os.scandir(self.img_dir) as directories:
             for dir in directories:
-                if os.path.isfile(dir):
-                    continue
-                final_dir = self.img_dir + dir.name
-                entries = os.listdir(final_dir)
-                temp_dir = {}
+                self.monitor: Any = {}
 
-                for name_long in entries:
-                    name = name_long.split(".")[0]
-                    temp_dir[f"{name}"] = f"./img/{dir.name}/{name_long}"
-                    setattr(self, f"{dir.name}", name)
-                self.image_repository[f"{dir.name}"] = temp_dir
+                with os.scandir(dir.path) as monitors:
+                    for monitor in monitors:
+                        if os.path.isfile(monitor):
+                            continue
+                        final_dir = monitor.path
+                        entries = os.listdir(final_dir)
+                        temp_dir = {}
+
+                        for name_long in entries:
+                            name = name_long.split(".")[0]
+                            temp_dir[f"{name}"] = (
+                                f"./img/{dir.name}/{monitor.name}/{name_long}"
+                            )
+                            setattr(self, f"{dir.name}", name)
+                        self.monitor[f"{monitor.name}"] = temp_dir
+                self.image_repository[f"{dir.name}"] = self.monitor
 
     def create_json(self, output_path: str):
         with open(output_path, "w") as outfile:
@@ -38,15 +45,22 @@ class DirectoryManager:
             file.write("from typing import Literal\n")
             all: list[str] = []
             keys: list[str] = []
-            for key, iterable in self.image_repository.items():
+            monitors: list[str] = []
+
+            for key, iterable in self.image_repository.items():  # type: ignore
                 keys.append(f"'{key}'")
-                # creating array of
-                temp: list[str] = []
-                for name_long in iterable:
-                    name = name_long.split(".")[0]
-                    all.append(f"'{name}'")
-                    temp.append(f"'{name}'")
-                string = ", ".join(temp)
+                string = ""
+                for monitor, subiterable in self.image_repository[key].items():  # type: ignore
+                    # creating array of
+                    if f"'{monitor}'" not in monitors:
+                        monitors.append(f"'{monitor}'")
+
+                    temp: list[str] = []
+                    for name_long in subiterable:
+                        name = name_long.split(".")[0]
+                        all.append(f"'{name}'")
+                        temp.append(f"'{name}'")
+                    string = ", ".join(temp)
 
                 # create array literal
                 file.write(f"{key} = Literal[{string}]\n")
@@ -54,6 +68,9 @@ class DirectoryManager:
                     file.write(f"{key.upper()}: list[{key}] = [{string}]\n")
                 else:
                     file.write(f"{key.upper()}: list[str] = [{string}]\n")
+            # monitors array
+            string = ", ".join(monitors)
+            file.write(f"monitors = Literal[{string}]\n")
             # key array
             string = ", ".join(keys)
             file.write(f"keys = Literal[{string}]\n")

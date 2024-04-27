@@ -1,4 +1,4 @@
-from pyautogui import locateCenterOnScreen, locateOnScreen
+from pyautogui import locateCenterOnScreen, locateOnScreen, ImageNotFoundException, size
 from typing import Literal
 from ComputerVision.image_repository import *
 from ComputerVision.cv_types import *
@@ -7,14 +7,18 @@ fraction = Literal["1/4", "1/2", "3/4"]
 
 
 class ComputerVision:
-    def __init__(self):
+    def __init__(self, monitor: monitors = "2M"):
+        w, h = size()  # type: ignore
+        self.monitor: str = monitor
+        if h == 2048:
+            self.monitor = "3M"
+
         self.image_repository = image_repository
 
     def get_status(
-        self, button: status_gen | status_mcu | status_mu
+        self, button: status_gen | status_mcu | status_mu, confidence: float = 0.90
     ) -> tuple[int, int]:
         dir: keys = "status_gen"
-        confidence = 0.95
 
         if button in STATUS_GEN:
             dir: keys = "status_gen"
@@ -23,18 +27,18 @@ class ComputerVision:
         elif button in STATUS_MU:
             dir: keys = "status_mu"
         try:
-            path: str = self.image_repository[dir][button]
+            path: str = self.image_repository[dir][self.monitor][button]
             x, y = locateCenterOnScreen(path, confidence=confidence)  # type: ignore
             return x, y  # type: ignore
-        except TypeError:
+        except (TypeError, ImageNotFoundException):
             return -1, -1
 
-    def get_icon_coords(self, button: all_buttons) -> tuple[int, int]:
+    def get_icon_coords(
+        self, button: all_buttons, confidence: float = 0.9
+    ) -> tuple[int, int]:
         dir: keys = "aws"
-        confidence = 0.90
 
         if button in AWS:
-            confidence = 0.93
             dir: keys = "aws"
         elif button in GEN:
             dir: keys = "gen"
@@ -44,8 +48,6 @@ class ComputerVision:
             dir: keys = "mcu_opt"
         elif button in MCU_TABS:
             dir: keys = "mcu_tabs"
-        elif button in MCU_OPT:
-            dir: keys = "mcu_opt"
         if button in MU:
             dir: keys = "mu"
         elif button in MUTL:
@@ -56,11 +58,11 @@ class ComputerVision:
             dir: keys = "mu_tabs"
         elif button in RU:
             dir: keys = "ru"
-        path: str = self.image_repository[dir][button]
+        path: str = self.image_repository[dir][self.monitor][button]
         try:
             x, y = locateCenterOnScreen(path, confidence=confidence)  # type: ignore
             return x, y  # type: ignore
-        except TypeError:
+        except (TypeError, ImageNotFoundException):
             return -1, -1
 
     def get_icon_all_coords(
@@ -71,11 +73,11 @@ class ComputerVision:
             dir: keys = "mcu_tabs"
         elif button in MUTL:
             dir: keys = "mutl"
-        path: str = self.image_repository[dir][button]
+        path: str = self.image_repository[dir][self.monitor][button]
         try:
             x, y, w, h = locateOnScreen(path)  # type: ignore
             return x, y, w, h  # type: ignore
-        except TypeError:
+        except (TypeError, ImageNotFoundException):
             return -1, -1, -1, -1
 
     @DeprecationWarning
@@ -86,6 +88,6 @@ class ComputerVision:
                     try:
                         x, y = locateCenterOnScreen(path, confidence=0.85)  # type: ignore
                         setattr(self, f"{name}", status)
-                    except TypeError:
+                    except (TypeError, ImageNotFoundException):
                         pass
         return getattr(self, f"{name}")

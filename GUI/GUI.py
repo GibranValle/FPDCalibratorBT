@@ -34,10 +34,11 @@ class GUI(CTk):
         from GUI.Messenger import Messenger
         from Exposure.Watcher import Watcher
 
+        version = "2.0.5"
         super().__init__()  # type: ignore
         self.attributes("-topmost", True)  # type: ignore
         self.geometry("980x440")  # type: ignore
-        self.title("FPD Calibration bot")  # type: ignore
+        self.title(f"FPD Calibration bot {version}")  # type: ignore
         self.resizable(False, False)  # type: ignore
         self.protocol("WM_DELETE_WINDOW", self.on_closing)  # type: ignore
         self.lower()
@@ -68,7 +69,7 @@ class GUI(CTk):
         self.rowconfigure(2, weight=1, minsize=120)
         self.rowconfigure(3, weight=1, minsize=60)
 
-        #MESSAGE COMPONENTS
+        # MESSAGE COMPONENTS
         self.logger = Logger()
         self.output_log = Log(self)  # type: ignore
         self.statusBox = StatusBox(self)
@@ -162,4 +163,3 @@ class GUI(CTk):
 
     def window_log(self, text: str) -> None:
         self.output_log.append(text)
-
