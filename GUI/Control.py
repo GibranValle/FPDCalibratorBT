@@ -72,7 +72,9 @@ class Control(CTk):
         if button == "start":
             if self.app.mode == "auto":
                 self.app.window_log("Error: Usar botón continuo")
-                self.app.file_log("control", "error", "Favor de utilizar botón continuo!")
+                self.app.file_log(
+                    "control", "error", "Favor de utilizar botón continuo!"
+                )
                 return
 
             if self.app.app_state == "pause":
@@ -84,7 +86,7 @@ class Control(CTk):
             self.app.change_app_state(button)
             self.update_buttons(button)
             if self.app.mode == "manual":
-                if self.app.duration == "short":
+                if self.app.duration == "short 15s" or self.app.duration == "short 5s":
                     Thread(target=self.app.manual.start_exposure).start()
                 elif self.app.duration == "long":
                     Thread(target=self.app.manual.start_exposure, args=["long"]).start()
@@ -113,10 +115,25 @@ class Control(CTk):
             elif self.app.mode == "auto":
                 if self.app.current_calib == "None":
                     self.app.window_log("Error: Select calibration from list")
-                    self.app.file_log("control", "warning", "Select calibration from list")
+                    self.app.file_log(
+                        "control", "warning", "Select calibration from list"
+                    )
                     return
                 self.app.change_app_state(button)
                 Thread(target=self.app.smart.start_auto_loop).start()
+
+            elif self.app.mode == "manual":
+                self.app.messenger.separator()
+                self.app.window_log("Modo continuo manual")
+                self.app.window_log(f"Exposición: {self.app.duration}")
+                self.app.window_log("Espera: 30s")
+                self.app.change_app_state(button)
+                self.update_buttons(button)
+                Thread(
+                    target=self.app.smart.start_manual_continuos,
+                    args=[self.app.duration],
+                ).start()
+                return
 
             elif self.app.mode == "mA":
                 self.app.window_log("Error: Usar botón start")

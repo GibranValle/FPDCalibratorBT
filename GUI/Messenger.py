@@ -2,6 +2,7 @@ from Exposure.constants import *
 from ComputerVision.ComputerVision import ComputerVision
 from GUI.constants import class_option
 
+
 class Messenger:
     from GUI.GUI import GUI
 
@@ -24,7 +25,7 @@ class Messenger:
         time = self.convert_seconds(seconds)
         self.app.window_log(f"In pause: {time}")
 
-    def errorMessage(self, _class: class_option = 'messenger'):
+    def errorMessage(self, _class: class_option = "messenger"):
         self.app.window_log(f"Aborted!")
         self.log(_class, "error", "Error")
 
@@ -63,11 +64,12 @@ class Messenger:
         self.app.window_log(f"Exposure completed!\nTotal time: {time}")
         self.log("smart", "success", f"Exposure completed!\nTotal time: {time}")
 
+    def separator(self):
+        self.app.window_log("--------------------------")
+
     def setExposureMessage(self, seconds: int, exposures: int):
         time = self.convert_seconds(seconds)
-        self.app.window_log(
-            f"{exposures} exposures completed!\nTotal time: {time}"
-        )
+        self.app.window_log(f"{exposures} exposures completed!\nTotal time: {time}")
         self.log(
             "smart", "success", f"{exposures} exposures completed!\nTotal time: {time}"
         )
@@ -76,4 +78,3 @@ class Messenger:
         self.log = app.file_log
         self.app = app
         self.cv = ComputerVision()
-        

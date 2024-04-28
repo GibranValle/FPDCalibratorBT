@@ -12,8 +12,12 @@ class StatusBox(CTk):
         title = app.font_title
         self.app = app
 
-        self.status_mu_label = CTkLabel(f, font=title, text="MU: Blocked")
-        self.status_gen_label = CTkLabel(f, font=title, text="Gen: Blocked")
+        self.status_mu_label = CTkLabel(
+            f, font=title, text="MU: Blocked", text_color="red"
+        )
+        self.status_gen_label = CTkLabel(
+            f, font=title, text="Gen: Blocked", text_color="red"
+        )
         self.current_calib = CTkLabel(f, font=title, text="None")
         self.status_mcu_label = CTkLabel(f, font=title, text="MCU: Offline")
 
@@ -38,11 +42,11 @@ class StatusBox(CTk):
         self.status_mcu_label.configure(text="MCU: " + self.app.get_state_mcu())  # type: ignore
 
         if self.app.mode == "mA":
-            self.status_gen_label.configure(text="Gen: " + self.app.get_state_gen())  # type: ignore
+            self.status_gen_label.configure(text="Gen: " + self.app.get_state_gen(), text_color="white")  # type: ignore
 
         if self.app.mode == "manual":
-            self.status_mcu_label.configure(text="N/A")  # type: ignore
-            self.status_mu_label.configure(text="N/A")  # type: ignore
+            self.status_mcu_label.configure(text="")  # type: ignore
+            self.status_mu_label.configure(text="")  # type: ignore
         if self.app.mode == "auto":
             self.current_calib.configure(text="Current calib: " + self.app.current_calib)  # type: ignore
 

@@ -50,14 +50,24 @@ tabs_list = Literal["manual", "semi", "auto"]
 push_option = Literal["push", "release"]
 exposure_option = Literal["short", "long"]
 class_option = Literal[
-    "manual", "semi", "auto", "serial", "gui", "smart", "mu0", "mcu0", "control", "watcher", "messenger"
+    "manual",
+    "semi",
+    "auto",
+    "serial",
+    "gui",
+    "smart",
+    "mu0",
+    "mcu0",
+    "control",
+    "watcher",
+    "messenger",
 ]
 level_option = Literal["info", "error", "warning", "success"]
 control_option = Literal["start", "pause", "stop", "continuos", "expand"]
 aux_option = Literal[
     "enable", "hlv", "mag", "select", "calib", "fpd", "ff", "mcu0", "mu0"
 ]
-dur_option = Literal["short", "long"]
+dur_option = Literal["short 5s", "short 15s", "long"]
 mode_option = Literal["mA", "FPD", "manual", "auto"]
 ok_option = Literal["on", "off"]
 

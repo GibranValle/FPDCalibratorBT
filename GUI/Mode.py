@@ -12,11 +12,12 @@ class Mode(CTk):
         self.app = app
         text = app.font_title
         self.com = app.com
+        self.toggle = False
 
         self.button_short = CTkButton(
             f,
             font=text,
-            text="Corto 15s",
+            text="Corto 5s",
             width=WIDTH_3,
             fg_color=INFO_COLOR,
             hover_color=INFO_COLOR_HOVER,
@@ -82,10 +83,23 @@ class Mode(CTk):
         self.show()
 
     def mode(self, option: str) -> None:
+        if option != "short":
+            self.toggle = False
+
         if option == "short":
-            self.app.duration = "short"
             self.app.mode = "manual"
             self.app.autoselect = "off"
+
+            if not self.toggle:
+                self.toggle = True
+                self.app.duration = "short 5s"
+
+            elif self.toggle:
+                if self.app.duration == "short 15s":
+                    self.app.duration = "short 5s"
+                elif self.app.duration == "short 5s":
+                    self.app.duration = "short 15s"
+
         elif option == "long":
             self.app.duration = "long"
             self.app.mode = "manual"
@@ -95,7 +109,7 @@ class Mode(CTk):
             self.app.mode = "mA"
             self.app.autoselect = "off"
         elif option == "FPD":
-            self.app.duration = "short"
+            self.app.duration = "short 5s"
             self.app.mode = "FPD"
             self.app.autoselect = "off"
         elif option == "ok":
@@ -116,12 +130,17 @@ class Mode(CTk):
                 self.app.autoselect = "on"
                 self.button_auto_select.configure(text_color="white")  # type: ignore
                 self.app.toggle_select_button()
+
         self.update()
         self.app.statusBox.update()
 
     def update(self) -> None:
-        if self.app.duration == "short":
-            self.button_short.configure(text_color="white")  # type: ignore
+        print(self.app.duration)
+        if self.app.duration == "short 5s":
+            self.button_short.configure(text_color="white", text="Corto 5s")  # type: ignore
+            self.button_long.configure(text_color=DISABLED_COLOR)  # type: ignore
+        elif self.app.duration == "short 15s":
+            self.button_short.configure(text_color="white", text="Corto 15s")  # type: ignore
             self.button_long.configure(text_color=DISABLED_COLOR)  # type: ignore
         elif self.app.duration == "long":
             self.button_long.configure(text_color="white")  # type: ignore

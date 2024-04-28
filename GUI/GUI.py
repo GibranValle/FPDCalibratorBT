@@ -45,11 +45,11 @@ class GUI(CTk):
 
         # states
         self.app_state: control_option = "stop"
-        self.state_mcu: status_mcu = "offline"
+        self.state_mcu: status_mcu = "standby"
         self.state_mu: status_mu = "blocked"
         self.state_gen: status_gen = "idle"
 
-        self.duration: dur_option = "short"
+        self.duration: dur_option = "short 5s"
         self.mode: mode_option = "FPD"
         self.click_ok: ok_option = "on"
         self.autoselect: ok_option = "off"
