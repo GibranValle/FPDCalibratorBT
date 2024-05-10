@@ -14,7 +14,6 @@ class SmartExposure:
         total = 0
         try:
             total += self.app.watcher.wait_calib_end()
-            self.app.com.end()
         except RuntimeError:
             return total
         return total
@@ -50,6 +49,7 @@ class SmartExposure:
             self.app.com.end()
 
         except RuntimeError:
+            self.app.com.end()
             self.app.statusBox.status_gen_label.configure(text="Gen: Blocked", text_color="red")  # type: ignore
             return total
         self.app.messenger.exposureMessage(total)
@@ -81,6 +81,7 @@ class SmartExposure:
                 exposures += 1
 
             except RuntimeError:
+                self.app.com.end()
                 if exposures > 0:
                     self.app.messenger.setExposureMessage(total, exposures)
                 else:
@@ -100,6 +101,7 @@ class SmartExposure:
             self.app.statusBox.status_mu_label.configure(text="MU: Blocked", text_color="red")  # type: ignore
             self.app.com.end()
         except RuntimeError:
+            self.app.com.end()
             self.app.statusBox.status_mu_label.configure(text="MU: Blocked", text_color="red")  # type: ignore
             return total
         self.app.messenger.exposureMessage(total)
@@ -141,6 +143,7 @@ class SmartExposure:
                     break
 
             except RuntimeError:
+                self.app.com.end()
                 self.app.set_state_mcu("idle")
                 self.app.statusBox.status_mu_label.configure(text="MU: Blocked", text_color="red")  # type: ignore
                 self.app.control.action("stop")
