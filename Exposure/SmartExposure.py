@@ -109,7 +109,7 @@ class SmartExposure:
     def start_smart_loop(self) -> int:
         total = 0
         exposures = 0
-        self.app.set_state_mcu("standby")
+        self.app.set_state_mcu("idle")
         self.app.statusBox.status_mcu_label.configure(text="MCU: calibrating")  # type: ignore
         while True:
             try:
@@ -141,7 +141,7 @@ class SmartExposure:
                     break
 
             except RuntimeError:
-                self.app.set_state_mcu("standby")
+                self.app.set_state_mcu("idle")
                 self.app.statusBox.status_mu_label.configure(text="MU: Blocked", text_color="red")  # type: ignore
                 self.app.control.action("stop")
                 break
@@ -199,10 +199,8 @@ class SmartExposure:
 
                 else:
                     total = self.start_smart_loop()
-                    print(total)
                     if total == -1:
                         raise ConnectionAbortedError
-                    print("end of iteration")
 
         except ConnectionAbortedError:
             self.app.control.action("stop")

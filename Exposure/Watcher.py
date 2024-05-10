@@ -57,11 +57,11 @@ class Watcher:
     def wait_standby(self, watchPass: bool = False, count: int = 0) -> int:
         total = 0
         pause = 0
-        for i in range(MAX_TIME_STANDBY):
-            self.app.messenger.standByMessage(i)
-            sleep(SLEEP_TIME)
+        for _ in range(MAX_TIME_STANDBY):
+            self.app.messenger.standByMessage(total)
             total += 1
-
+            sleep(SLEEP_TIME)
+            self.app.messenger.standByMessage(total)
             if watchPass:
                 if self.is_calib_passed() and count > 0:
                     break
@@ -74,11 +74,13 @@ class Watcher:
             self._view_mu_state("standby")
             self._view_gen_state("push")
 
+            print(self.app.get_state_gen())
+
             if (
                 self.app.get_state_gen() == "push"
                 or self.app.get_state_mu() == "standby"
             ):
-                time = Messenger.convert_seconds(i)
+                time = Messenger.convert_seconds(total)
                 self.app.file_log(
                     "smart", "info", f"xray gen is ready for exposure, waited: {time}"
                 )
@@ -99,19 +101,21 @@ class Watcher:
     def wait_exposure_start(self) -> int:
         total = 0
         pause = 0
-        for i in range(MAX_TIME_BEFORE_EXPOSURE):
-            self.app.messenger.startMessage(i)
+        for _ in range(MAX_TIME_BEFORE_EXPOSURE):
+            self.app.messenger.startMessage(total)
 
             if self.is_calib_passed():
                 return total
 
             sleep(SLEEP_TIME / 2)
-            total += i
+            total += 1
+
+            self.app.messenger.startMessage(total)
 
             self._view_mu_state("exposure")
 
             if self.app.get_state_mu() == "exposure":
-                time = Messenger.convert_seconds(i)
+                time = Messenger.convert_seconds(total)
                 self.app.file_log(
                     "smart", "info", f"xray gen should be exposing, waited: {time}"
                 )
@@ -135,19 +139,21 @@ class Watcher:
     def wait_ma_exposure_start(self) -> int:
         total = 0
         pause = 0
-        for i in range(MAX_TIME_BEFORE_EXPOSURE):
-            self.app.messenger.startMessage(i)
+        for _ in range(MAX_TIME_BEFORE_EXPOSURE):
+            self.app.messenger.startMessage(total)
 
             if self.is_calib_passed():
                 return total
 
             sleep(SLEEP_TIME / 2)
-            total += i
+            total += 1
+
+            self.app.messenger.startMessage(total)
 
             self._view_gen_state("exposing")
 
             if self.app.get_state_gen() == "exposing":
-                time = Messenger.convert_seconds(i)
+                time = Messenger.convert_seconds(total)
                 self.app.file_log(
                     "smart", "info", f"xray gen should be exposing, waited: {time}"
                 )
@@ -171,11 +177,13 @@ class Watcher:
     def wait_exposure_end(self) -> int:
         total = 0
         pause = 0
-        for i in range(MAX_TIME_EXPOSURE):
-            self.app.messenger.endMessage(i)
+        for _ in range(MAX_TIME_EXPOSURE):
+            self.app.messenger.endMessage(total)
 
             sleep(SLEEP_TIME / 2)
             total += 1
+
+            self.app.messenger.endMessage(total)
 
             if self.is_calib_passed():
                 return total
@@ -184,7 +192,7 @@ class Watcher:
             self._view_gen_state("release")
 
             if self.app.get_state_mu() == "blocked":
-                time = Messenger.convert_seconds(i)
+                time = Messenger.convert_seconds(total)
                 self.app.file_log("watcher", "info", f"end of exposure, waited: {time}")
                 break
 
@@ -205,8 +213,8 @@ class Watcher:
     def wait_ma_exposure_end(self) -> int:
         total = 0
         pause = 0
-        for i in range(MAX_TIME_EXPOSURE):
-            self.app.messenger.endMessage(i)
+        for _ in range(MAX_TIME_EXPOSURE):
+            self.app.messenger.endMessage(total)
 
             sleep(SLEEP_TIME / 2)
             total += 1
@@ -214,10 +222,12 @@ class Watcher:
             if self.is_calib_passed():
                 return total
 
+            self.app.messenger.endMessage(total)
+
             self._view_gen_state("release")
 
             if self.app.get_state_gen() == "release":
-                time = Messenger.convert_seconds(i)
+                time = Messenger.convert_seconds(total)
                 self.app.file_log("watcher", "info", f"end of exposure, waited: {time}")
                 break
 

@@ -45,7 +45,7 @@ class GUI(CTk):
 
         # states
         self.app_state: control_option = "stop"
-        self.state_mcu: status_mcu = "standby"
+        self.state_mcu: status_mcu = "idle"
         self.state_mu: status_mu = "blocked"
         self.state_gen: status_gen = "idle"
 

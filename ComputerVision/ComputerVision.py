@@ -16,7 +16,7 @@ class ComputerVision:
         self.image_repository = image_repository
 
     def get_status(
-        self, button: status_gen | status_mcu | status_mu, confidence: float = 0.90
+        self, button: status_gen | status_mcu | status_mu, confidence: float = 0.95
     ) -> tuple[int, int]:
         dir: keys = "status_gen"
 
@@ -34,7 +34,7 @@ class ComputerVision:
             return -1, -1
 
     def get_icon_coords(
-        self, button: all_buttons, confidence: float = 0.9
+        self, button: all_buttons, confidence: float = 0.90
     ) -> tuple[int, int]:
         dir: keys = "aws"
 

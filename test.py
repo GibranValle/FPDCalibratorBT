@@ -2,14 +2,13 @@ from ComputerVision.ComputerVision import ComputerVision
 from ComputerVision.cv_types import *
 import os
 
-cv = ComputerVision(monitor="3M")
+cv = ComputerVision(monitor="2M")
 os.system("cls")
 
 
 def check_status():
     status: list[status_mu] = ["blocked"]
-
-    for i in range(100, 80, -5):
+    for i in range(100, 60, -5):
         confidence = i / 100
         isFound = False
         for state in status:
@@ -22,8 +21,7 @@ def check_status():
             break
 
     status: list[status_mu] = ["exposure"]
-
-    for i in range(100, 80, -5):
+    for i in range(100, 60, -5):
         confidence = i / 100
         isFound = False
         for state in status:
@@ -36,8 +34,61 @@ def check_status():
             break
 
     status: list[status_mu] = ["standby"]
+    for i in range(100, 60, -5):
+        confidence = i / 100
+        isFound = False
+        for state in status:
+            x, _ = cv.get_status(state, confidence)
+            if x > 0:
+                print(f"{state} found c: {confidence}")
+                isFound = True
+                break
+        if isFound:
+            break
 
-    for i in range(70, 80, -5):
+
+def check_status_gen():
+    status: list[status_gen] = ["idle"]
+    for i in range(100, 80, -5):
+        confidence = i / 100
+        isFound = False
+        for state in status:
+            x, _ = cv.get_status(state, confidence)
+            if x > 0:
+                print(f"{state} found c: {confidence}")
+                isFound = True
+                break
+        if isFound:
+            break
+
+    status: list[status_gen] = ["exposing"]
+    for i in range(100, 80, -5):
+        confidence = i / 100
+        isFound = False
+        for state in status:
+            x, _ = cv.get_status(state, confidence)
+            if x > 0:
+                print(f"{state} found c: {confidence}")
+                isFound = True
+                break
+        if isFound:
+            break
+
+    status: list[status_gen] = ["initializing"]
+    for i in range(100, 80, -5):
+        confidence = i / 100
+        isFound = False
+        for state in status:
+            x, _ = cv.get_status(state, confidence)
+            if x > 0:
+                print(f"{state} found c: {confidence}")
+                isFound = True
+                break
+        if isFound:
+            break
+
+    status: list[status_gen] = ["push"]
+    for i in range(100, 80, -5):
         confidence = i / 100
         isFound = False
         for state in status:
@@ -101,4 +152,6 @@ def check_mcu_tabs():
         print("c: ", confidence, "matches: ", count, "\n")
 
 
-check_mcu_tabs()
+# check_mcu_tabs()
+# check_status()
+check_status_gen()

@@ -135,7 +135,6 @@ class Mode(CTk):
         self.app.statusBox.update()
 
     def update(self) -> None:
-        print(self.app.duration)
         if self.app.duration == "short 5s":
             self.button_short.configure(text_color="white", text="Corto 5s")  # type: ignore
             self.button_long.configure(text_color=DISABLED_COLOR)  # type: ignore
